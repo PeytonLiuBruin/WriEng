@@ -1,0 +1,111 @@
+name: Import exact WriEng large files
+
+on:
+  push:
+    branches: [codex-transfer-wrieng-20261020]
+    paths: [.github/workflows/import-large.yml]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: wrieng-large-file-import
+  cancel-in-progress: false
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out current main for a normal fast-forward push
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: main
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Fetch the immutable transfer commit
+        env:
+          TRANSFER_COMMIT: ${{ github.sha }}
+        run: git fetch --no-tags origin "$TRANSFER_COMMIT"
+      - name: Reconstruct and verify the six exact source files
+        env:
+          TRANSFER_COMMIT: ${{ github.sha }}
+        run: |
+          python3 - <<'PY'
+          import base64, gzip, hashlib, io, json, os, pathlib, subprocess, tarfile
+
+          source = '2a726653e44e6a5089e48213d7b69e5817bda188'
+          expected_archive_sha256 = 'bc97922348722f912b35d75b50dff58c437b87e8be309738c764506d2310c0f6'
+          expected = {
+              'docs/preview-desktop.png': 'bb5444de329c9ff7de4a9bee3ee910fa184585a0',
+              'docs/preview-mobile.png': '187f2afc12abfad6e4e70e53670adae4843f1e38',
+              'public/icon-192.png': 'fd15cfb6361105f27383635ec39863f9faad6734',
+              'public/icon-512.png': '0896cdb356ad203a33a062a5b466b08a7d7cd144',
+              'public/data/core-lexicon.json': 'a6aca6e9a41ea44a21cf2956e67a89c3957942d9',
+              'src/content/core-lexicon.json': 'a6aca6e9a41ea44a21cf2956e67a89c3957942d9',
+          }
+
+          def transfer_file(name):
+              return subprocess.check_output(['git', 'show', os.environ['TRANSFER_COMMIT'] + ':.transfer/' + name])
+
+          manifest = json.loads(transfer_file('manifest.json'))
+          assert manifest['format'] == 'wrieng-exact-git-transfer-v1'
+          assert manifest['source_commit'] == source
+          assert manifest['archive_sha256'] == expected_archive_sha256
+          assert manifest['archive_byte_length'] == 1561518
+          assert len(manifest['chunks']) == 32
+          assert len(manifest['files']) == len(expected)
+          assert {entry['path']: entry['git_blob_sha'] for entry in manifest['files']} == expected
+          pieces = []
+          for index, item in enumerate(manifest['chunks']):
+              assert item['file'] == f'chunk-{index:04d}.json'
+              chunk = json.loads(transfer_file(item['file']))
+              data = base64.b64decode(chunk['data_base64'], validate=True)
+              assert chunk['index'] == index
+              assert len(data) == chunk['byte_length'] == item['byte_length']
+              assert 0 < len(data) <= 48 * 1024
+              assert hashlib.sha256(data).hexdigest() == chunk['sha256'] == item['sha256']
+              pieces.append(data)
+          compressed = b''.join(pieces)
+          assert len(compressed) == manifest['archive_byte_length']
+          assert hashlib.sha256(compressed).hexdigest() == expected_archive_sha256
+          restored = {}
+          with tarfile.open(fileobj=io.BytesIO(gzip.decompress(compressed)), mode='r:') as archive:
+              members = archive.getmembers()
+              expected_members = set(expected) - {'src/content/core-lexicon.json'}
+              assert len(members) == len(expected_members)
+              assert {member.name for member in members} == expected_members
+              for member in members:
+                  assert member.isfile() and member.mode == 0o644
+              for entry in manifest['files']:
+                  path = entry['path']
+                  assert entry['mode'] == '100644'
+                  member_path = 'public/data/core-lexicon.json' if path == 'src/content/core-lexicon.json' else path
+                  assert entry['archive_member'] == member_path
+                  data = archive.extractfile(member_path).read()
+                  assert len(data) == entry['byte_length']
+                  sha = hashlib.sha1(b'blob ' + str(len(data)).encode() + b'\0' + data).hexdigest()
+                  assert sha == expected[path]
+                  restored[path] = data
+          for path, data in restored.items():
+              destination = pathlib.Path(path)
+              destination.parent.mkdir(parents=True, exist_ok=True)
+              destination.write_bytes(data)
+              destination.chmod(0o644)
+              actual = subprocess.check_output(['git', 'hash-object', '--', path], text=True).strip()
+              assert actual == expected[path]
+              print(path + ': ' + actual)
+          subprocess.run(['git', 'add', '--', *expected], check=True)
+          staged = subprocess.check_output(['git', 'diff', '--cached', '--name-only', '-z']).decode().split('\0')
+          assert set(filter(None, staged)) <= set(expected)
+          PY
+      - name: Commit only the six verified original paths
+        run: |
+          if git diff --cached --quiet; then
+            echo "All six exact source blobs are already present on main."
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Import exact WriEng data and images from 2a72665'
+          git push origin HEAD:main
