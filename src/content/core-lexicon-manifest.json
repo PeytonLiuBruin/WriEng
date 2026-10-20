@@ -1,0 +1,326 @@
+{
+  "candidateCount": 50617,
+  "candidateExamples": [
+    {
+      "missing": [
+        "missing-aligned-chinese",
+        "missing-cmu-pronunciation"
+      ],
+      "sourceSenseId": "14800842-n",
+      "term": "congener"
+    },
+    {
+      "missing": [
+        "manual-quality-review"
+      ],
+      "sourceSenseId": "13954253-n",
+      "term": "being"
+    },
+    {
+      "missing": [
+        "missing-aligned-chinese",
+        "missing-cmu-pronunciation"
+      ],
+      "sourceSenseId": "08578517-n",
+      "term": "benthos"
+    },
+    {
+      "missing": [
+        "missing-cmu-pronunciation",
+        "missing-general-frequency"
+      ],
+      "sourceSenseId": "00006024-n",
+      "term": "heterotroph"
+    },
+    {
+      "missing": [
+        "missing-cmu-pronunciation",
+        "missing-general-frequency"
+      ],
+      "sourceSenseId": "00006400-n",
+      "term": "biont"
+    },
+    {
+      "missing": [
+        "missing-aligned-chinese"
+      ],
+      "sourceSenseId": "02991711-n",
+      "term": "cell"
+    },
+    {
+      "missing": [
+        "missing-aligned-chinese"
+      ],
+      "sourceSenseId": "01645601-v",
+      "term": "cause"
+    },
+    {
+      "missing": [
+        "missing-aligned-chinese"
+      ],
+      "sourceSenseId": "01557614-a",
+      "term": "mortal"
+    },
+    {
+      "missing": [
+        "missing-aligned-chinese"
+      ],
+      "sourceSenseId": "09845589-n",
+      "term": "brute"
+    },
+    {
+      "missing": [
+        "missing-aligned-chinese"
+      ],
+      "sourceSenseId": "07993279-n",
+      "term": "fauna"
+    },
+    {
+      "missing": [
+        "missing-aligned-chinese"
+      ],
+      "sourceSenseId": "01036083-a",
+      "term": "native"
+    },
+    {
+      "missing": [
+        "missing-aligned-chinese"
+      ],
+      "sourceSenseId": "05671325-n",
+      "term": "matter"
+    },
+    {
+      "missing": [
+        "missing-aligned-chinese"
+      ],
+      "sourceSenseId": "00021939-n",
+      "term": "artifact"
+    },
+    {
+      "missing": [
+        "missing-aligned-chinese",
+        "missing-cmu-pronunciation"
+      ],
+      "sourceSenseId": "00021939-n",
+      "term": "artefact"
+    },
+    {
+      "missing": [
+        "missing-cmu-pronunciation"
+      ],
+      "sourceSenseId": "00023271-n",
+      "term": "noesis"
+    },
+    {
+      "missing": [
+        "missing-aligned-chinese"
+      ],
+      "sourceSenseId": "00026192-n",
+      "term": "feeling"
+    },
+    {
+      "missing": [
+        "missing-aligned-chinese"
+      ],
+      "sourceSenseId": "05064037-n",
+      "term": "shape"
+    },
+    {
+      "missing": [
+        "missing-aligned-chinese"
+      ],
+      "sourceSenseId": "06290637-n",
+      "term": "form"
+    },
+    {
+      "missing": [
+        "missing-aligned-chinese"
+      ],
+      "sourceSenseId": "07309599-n",
+      "term": "time"
+    },
+    {
+      "missing": [
+        "missing-aligned-chinese"
+      ],
+      "sourceSenseId": "00028651-n",
+      "term": "space"
+    },
+    {
+      "missing": [
+        "missing-aligned-chinese"
+      ],
+      "sourceSenseId": "00029378-n",
+      "term": "event"
+    },
+    {
+      "missing": [
+        "missing-aligned-chinese"
+      ],
+      "sourceSenseId": "00031264-n",
+      "term": "group"
+    },
+    {
+      "missing": [
+        "missing-aligned-chinese"
+      ],
+      "sourceSenseId": "00031264-n",
+      "term": "grouping"
+    },
+    {
+      "missing": [
+        "missing-aligned-chinese"
+      ],
+      "sourceSenseId": "00031921-n",
+      "term": "relation"
+    },
+    {
+      "missing": [
+        "missing-aligned-chinese"
+      ],
+      "sourceSenseId": "06252138-n",
+      "term": "communication"
+    },
+    {
+      "missing": [
+        "missing-aligned-chinese"
+      ],
+      "sourceSenseId": "00647094-v",
+      "term": "measure"
+    },
+    {
+      "missing": [
+        "missing-aligned-chinese"
+      ],
+      "sourceSenseId": "00033615-n",
+      "term": "quantity"
+    },
+    {
+      "missing": [
+        "missing-aligned-chinese"
+      ],
+      "sourceSenseId": "04840011-n",
+      "term": "kindness"
+    },
+    {
+      "missing": [
+        "missing-aligned-chinese",
+        "missing-cmu-pronunciation"
+      ],
+      "sourceSenseId": "04840981-n",
+      "term": "benignity"
+    },
+    {
+      "missing": [
+        "missing-aligned-chinese",
+        "missing-cmu-pronunciation"
+      ],
+      "sourceSenseId": "00034777-n",
+      "term": "abdominoplasty"
+    }
+  ],
+  "candidateReasonCounts": {
+    "ambiguous-inflected-form": 252,
+    "eligibleBeforeSelection": 12894,
+    "excludedExistingCurated": 170,
+    "function-word-homograph-review": 10,
+    "high-frequency-term-unattested-sense": 5,
+    "manual-quality-review": 17,
+    "missing-aligned-chinese": 36838,
+    "missing-cmu-pronunciation": 32965,
+    "missing-general-frequency": 15765,
+    "sensitive-gloss-review": 190,
+    "short-unit-or-abbreviation-review": 60,
+    "wordnetLowercaseHeadwords": 63681
+  },
+  "cmudictSha256": "81917843c7f44ce2b094ac63873c2c7a4cf802040792c455ba3ca406891c3d22",
+  "coreBytes": 4613098,
+  "coreSha256": "89e2a15820e84f34bb9725fcdbfbcec14c45513716995f227f97f2d9df3451e1",
+  "count": 6000,
+  "eligibleNotSelectedCount": 6894,
+  "inputHashes": {
+    "COW-LICENSE.txt": "81a3cb1f97e120581d67c71424f2de5dd96325d951f991e8a092147a2a4b2321",
+    "COW-citation.bib": "28b6cca6bf00efec90953a983e9a5b7d42fc9f45798fdf62a6b214a64fec010d",
+    "ECDICT-LICENSE.txt": "f8552dd246f61a4e064569eae6194a01c6b3d63b03bf27c6ca863593c549ed0f",
+    "WordNet-3.0.tar.gz": "640db279c949a88f61f851dd54ebbb22d003f8b90b85267042ef85a3781d3a52",
+    "ecdict.csv": "1a6947e04785db63613a92e14903cdae7954f7e84860b10e68e5c7cbb3f9c3cf",
+    "wn-data-cmn.tab": "379fd2e41d3e1395f9f27cf23a39c6181849ffb4020c14a07ed2a4d4dd651122"
+  },
+  "learnableCount": 6000,
+  "routeCounts": {
+    "cet6": 2673,
+    "daily": 6000,
+    "gre": 1552,
+    "ielts": 2269,
+    "toefl": 2493
+  },
+  "schemaVersion": 1,
+  "sourceChineseSynsets": 42300,
+  "sources": {
+    "cmudict": {
+      "author": "Carnegie Mellon University and contributors",
+      "license": "BSD-2-Clause (CMUdict retained notice)",
+      "licenseText": "Copyright (C) 1993-2015 Carnegie Mellon University. All rights reserved.\n\nRedistribution and use in source and binary forms, with or without\nmodification, are permitted provided that the following conditions\nare met:\n\n1. Redistributions of source code must retain the above copyright\n   notice, this list of conditions and the following disclaimer.\n   The contents of this file are deemed to be source code.\n\n2. Redistributions in binary form must reproduce the above copyright\n   notice, this list of conditions and the following disclaimer in\n   the documentation and/or other materials provided with the\n   distribution.\n\nThis work was supported in part by funding from the Defense Advanced\nResearch Projects Agency, the Office of Naval Research and the National\nScience Foundation of the United States of America, and by member\ncompanies of the Carnegie Mellon Sphinx Speech Consortium. We acknowledge\nthe contributions of many volunteers to the expansion and improvement of\nthis dictionary.\n\nTHIS SOFTWARE IS PROVIDED BY CARNEGIE MELLON UNIVERSITY ``AS IS'' AND\nANY EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,\nTHE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR\nPURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL CARNEGIE MELLON UNIVERSITY\nNOR ITS EMPLOYEES BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,\nSPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT\nLIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,\nDATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY\nTHEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\nOF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n",
+      "name": "CMU Pronouncing Dictionary",
+      "notice": "/CMUdict-LICENSE.txt",
+      "sha256": "81917843c7f44ce2b094ac63873c2c7a4cf802040792c455ba3ca406891c3d22",
+      "url": "https://github.com/cmusphinx/cmudict/tree/74790861f652b15e4ac49015a90074ad62a27690",
+      "version": "74790861f652b15e4ac49015a90074ad62a27690"
+    },
+    "cow": {
+      "author": "Francis Bond and Shan Wang",
+      "citation": "Citation for cowWN\n\n@inproceedings{Wang:Bond:2013,\n  title =    {Building the Chinese Open Wordnet (COW): Starting from Core Synsets},\n  author =   {Wang, Shan and Bond, Francis},\n  booktitle =    {Sixth International Joint Conference on Natural Language Processing},\n  year =    {2013}\n  pages =    {10-18}\n}\n\n",
+      "license": "Chinese Open Wordnet database license",
+      "licenseText": "Copyright: 2013, 2014 Francis Bond, Shan Wang\n\nChinese Open WordNet\n\nThis software and database is being provided to you, the LICENSEE\nunder the following license.  By obtaining, using and/or copying this\nsoftware and database, you agree that you have read, understood, and\nwill comply with these terms and conditions:\n  \n  Permission to use, copy, modify and distribute this software and\n  database and its documentation for any purpose and without fee or\n  royalty is hereby granted, provided that you agree to comply with\n  the following copyright notice and statements, including the\n  disclaimer, and that the same appear on ALL copies of the software,\n  database and documentation, including modifications that you make\n  for internal use or for distribution.\n  \nChinese Open Wordnet Copyright 2013,2014 by Francis Bond and Shan\nWang.  All rights reserved.\n  \nTHIS SOFTWARE AND DATABASE IS PROVIDED \"AS IS\" AND WE MAKE NO\nREPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED.  BY WAY OF EXAMPLE,\nBUT NOT LIMITATION, WE MAKE NO REPRESENTATIONS OR WARRANTIES OF\nMERCHANTABILITY OR FITNESS FOR ANY PARTICULAR PURPOSE OR THAT THE USE\nOF THE LICENSED SOFTWARE, DATABASE OR DOCUMENTATION WILL NOT INFRINGE\nANY THIRD PARTY PATENTS, COPYRIGHTS, TRADEMARKS OR OTHER RIGHTS.\n  \nTitle to copyright in this software, database and any associated\ndocumentation shall at all times remain with the copyright holders and\nLICENSEE agrees to preserve same.\n",
+      "name": "Chinese Open Wordnet, via Open Multilingual Wordnet",
+      "notice": "/licenses/COW-LICENSE.txt",
+      "sha256": "379fd2e41d3e1395f9f27cf23a39c6181849ffb4020c14a07ed2a4d4dd651122",
+      "url": "https://raw.githubusercontent.com/omwn/omw-data/406bf83b3c507a3d1f26e88252d5d66893fd36bf/wns/cow/wn-data-cmn.tab",
+      "version": "406bf83b3c507a3d1f26e88252d5d66893fd36bf"
+    },
+    "ecdictTags": {
+      "author": "Linwei / skywind3000 and ECDICT contributors",
+      "license": "MIT (repository declaration; only tag facts extracted)",
+      "licenseText": "MIT License\n\nCopyright (c) 2025 Linwei\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n",
+      "name": "ECDICT community exam-reference tags only",
+      "notice": "/licenses/ECDICT-LICENSE.txt",
+      "sha256": "1a6947e04785db63613a92e14903cdae7954f7e84860b10e68e5c7cbb3f9c3cf",
+      "url": "https://github.com/skywind3000/ECDICT/tree/bc015ed2e24a7abef49fc6dbbb7fe32c1dadaf8b",
+      "version": "bc015ed2e24a7abef49fc6dbbb7fe32c1dadaf8b"
+    },
+    "wordfreq": {
+      "author": "Robyn Speer",
+      "codeLicense": "Apache-2.0",
+      "englishDataSha256": "dffae8066b78dce0a6667cf5f58e567054f902674667090a7ac8a8a44628b05c",
+      "license": "CC-BY-SA-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "name": "wordfreq general-English mixed-corpus frequency",
+      "notice": "/licenses/WriEng-frequency-NOTICE.txt",
+      "sha256": "4b1c6ecffc6198be3396d5cf871c4423ca71c907c231348d352dd54d62b97473",
+      "upstreamNotice": "## License\n\n`wordfreq` is freely redistributable under the Apache license (see\n`LICENSE.txt`), and it includes data files that may be\nredistributed under a Creative Commons Attribution-ShareAlike 4.0\nlicense (<https://creativecommons.org/licenses/by-sa/4.0/>).\n\n`wordfreq` contains data extracted from Google Books Ngrams\n(<http://books.google.com/ngrams>) and Google Books Syntactic Ngrams\n(<http://commondatastorage.googleapis.com/books/syntactic-ngrams/index.html>).\nThe terms of use of this data are:\n\n    Ngram Viewer graphs and data may be freely used for any purpose, although\n    acknowledgement of Google Books Ngram Viewer as the source, and inclusion\n    of a link to http://books.google.com/ngrams, would be appreciated.\n\n`wordfreq` also contains data derived from the following Creative Commons-licensed\nsources:\n\n- The Leeds Internet Corpus, from the University of Leeds Centre for Translation\n  Studies (<http://corpus.leeds.ac.uk/list.html>)\n\n- Wikipedia, the free encyclopedia (<http://www.wikipedia.org>)\n\n- ParaCrawl, a multilingual Web crawl (<https://paracrawl.eu>)\n\nIt contains data from OPUS OpenSubtitles 2018\n(<http://opus.nlpl.eu/OpenSubtitles.php>), whose data originates from the\nOpenSubtitles project (<http://www.opensubtitles.org/>) and may be used with\nattribution to OpenSubtitles.\n\nIt contains data from various SUBTLEX word lists: SUBTLEX-US, SUBTLEX-UK,\nSUBTLEX-CH, SUBTLEX-DE, and SUBTLEX-NL, created by Marc Brysbaert et al.\n(see citations below) and available at\n<http://crr.ugent.be/programs-data/subtitle-frequencies>.\n\nI (Robyn Speer) have obtained permission by e-mail from Marc Brysbaert to\ndistribute these wordlists in wordfreq, to be used for any purpose, not just\nfor academic use, under these conditions:\n\n- Wordfreq and code derived from it must credit the SUBTLEX authors.\n- It must remain clear that SUBTLEX is freely available data.\n\nThese terms are similar to the Creative Commons Attribution-ShareAlike license.\n\nSome additional data was collected by a custom application that watches the\nstreaming Twitter API, in accordance with Twitter's Developer Agreement &\nPolicy. This software gives statistics about words that are commonly used on\nTwitter; it does not display or republish any Twitter content.\n\n## Citing wordfreq\n\nIf you use wordfreq in your research, please cite it! We publish the code\nthrough Zenodo so that it can be reliably cited using a DOI. The current\ncitation is:\n\n> Robyn Speer. (2022). rspeer/wordfreq: v3.0 (v3.0.2). Zenodo. https://doi.org/10.5281/zenodo.7199437\n\nThe same citation in BibTex format:\n\n```\n@software{robyn_speer_2022_7199437,\n  author       = {Robyn Speer},\n  title        = {rspeer/wordfreq: v3.0},\n  month        = sep,\n  year         = 2022,\n  publisher    = {Zenodo},\n  version      = {v3.0.2},\n  doi          = {10.5281/zenodo.7199437},\n  url          = {https://doi.org/10.5281/zenodo.7199437}\n}\n```\n\n## Citations to work that wordfreq is built on\n\n- Bojar, O., Chatterjee, R., Federmann, C., Haddow, B., Huck, M., Hokamp, C.,\n  Koehn, P., Logacheva, V., Monz, C., Negri, M., Post, M., Scarton, C.,\n  Specia, L., & Turchi, M. (2015). Findings of the 2015 Workshop on Statistical\n  Machine Translation.\n  <http://www.statmt.org/wmt15/results.html>\n\n- Brysbaert, M. & New, B. (2009). Moving beyond Kucera and Francis: A Critical\n  Evaluation of Current Word Frequency Norms and the Introduction of a New and\n  Improved Word Frequency Measure for American English. Behavior Research\n  Methods, 41 (4), 977-990.\n  <http://sites.google.com/site/borisnew/pub/BrysbaertNew2009.pdf>\n\n- Brysbaert, M., Buchmeier, M., Conrad, M., Jacobs, A.M., Bölte, J., & Böhl, A.\n  (2011). The word frequency effect: A review of recent developments and\n  implications for the choice of frequency estimates in German. Experimental\n  Psychology, 58, 412-424.\n\n- Cai, Q., & Brysbaert, M. (2010). SUBTLEX-CH: Chinese word and character\n  frequencies based on film subtitles. PLoS One, 5(6), e10729.\n  <http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0010729>\n\n- Davis, M. (2012). Unicode text segmentation. Unicode Standard Annex, 29.\n  <http://unicode.org/reports/tr29/>\n\n- Halácsy, P., Kornai, A., Németh, L., Rung, A., Szakadát, I., & Trón, V.\n  (2004). Creating open language resources for Hungarian. In Proceedings of the\n  4th international conference on Language Resources and Evaluation (LREC2004).\n  <http://mokk.bme.hu/resources/webcorpus/>\n\n- Keuleers, E., Brysbaert, M. & New, B. (2010). SUBTLEX-NL: A new frequency\n  measure for Dutch words based on film subtitles. Behavior Research Methods,\n  42(3), 643-650.\n  <http://crr.ugent.be/papers/SUBTLEX-NL_BRM.pdf>\n\n- Kudo, T. (2005). Mecab: Yet another part-of-speech and morphological\n  analyzer.\n  <http://mecab.sourceforge.net/>\n\n- Lin, Y., Michel, J.-B., Aiden, E. L., Orwant, J., Brockman, W., and Petrov,\n  S. (2012). Syntactic annotations for the Google Books Ngram Corpus.\n  Proceedings of the ACL 2012 system demonstrations, 169-174.\n  <http://aclweb.org/anthology/P12-3029>\n\n- Lison, P. and Tiedemann, J. (2016). OpenSubtitles2016: Extracting Large\n  Parallel Corpora from Movie and TV Subtitles. In Proceedings of the 10th\n  International Conference on Language Resources and Evaluation (LREC 2016).\n  <http://stp.lingfil.uu.se/~joerg/paper/opensubs2016.pdf>\n\n- Ortiz Suárez, P. J., Sagot, B., and Romary, L. (2019). Asynchronous pipelines\n  for processing huge corpora on medium to low resource infrastructures. In\n  Proceedings of the Workshop on Challenges in the Management of Large Corpora\n  (CMLC-7) 2019.\n  <https://oscar-corpus.com/publication/2019/clmc7/asynchronous/>\n\n- ParaCrawl (2018). Provision of Web-Scale Parallel Corpora for Official\n  European Languages. <https://paracrawl.eu/>\n\n- van Heuven, W. J., Mandera, P., Keuleers, E., & Brysbaert, M. (2014).\n  SUBTLEX-UK: A new and improved word frequency database for British English.\n  The Quarterly Journal of Experimental Psychology, 67(6), 1176-1190.\n  <http://www.tandfonline.com/doi/pdf/10.1080/17470218.2013.850521>\n",
+      "url": "https://pypi.org/project/wordfreq/3.1.1/",
+      "version": "3.1.1"
+    },
+    "wordnet": {
+      "author": "Princeton University",
+      "license": "WordNet-3.0 license",
+      "licenseText": "WordNet Release 3.0\n\nThis software and database is being provided to you, the LICENSEE, by  \nPrinceton University under the following license.  By obtaining, using  \nand/or copying this software and database, you agree that you have  \nread, understood, and will comply with these terms and conditions.:  \n  \nPermission to use, copy, modify and distribute this software and  \ndatabase and its documentation for any purpose and without fee or  \nroyalty is hereby granted, provided that you agree to comply with  \nthe following copyright notice and statements, including the disclaimer,  \nand that the same appear on ALL copies of the software, database and  \ndocumentation, including modifications that you make for internal  \nuse or for distribution.  \n  \nWordNet 3.0 Copyright 2006 by Princeton University.  All rights reserved.  \n  \nTHIS SOFTWARE AND DATABASE IS PROVIDED \"AS IS\" AND PRINCETON  \nUNIVERSITY MAKES NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR  \nIMPLIED.  BY WAY OF EXAMPLE, BUT NOT LIMITATION, PRINCETON  \nUNIVERSITY MAKES NO REPRESENTATIONS OR WARRANTIES OF MERCHANT-  \nABILITY OR FITNESS FOR ANY PARTICULAR PURPOSE OR THAT THE USE  \nOF THE LICENSED SOFTWARE, DATABASE OR DOCUMENTATION WILL NOT  \nINFRINGE ANY THIRD PARTY PATENTS, COPYRIGHTS, TRADEMARKS OR  \nOTHER RIGHTS.  \n  \nThe name of Princeton University or Princeton may not be used in  \nadvertising or publicity pertaining to distribution of the software  \nand/or database.  Title to copyright in this software, database and  \nany associated documentation shall at all times remain with  \nPrinceton University and LICENSEE agrees to preserve same.  \n",
+      "name": "Princeton WordNet",
+      "notice": "/licenses/WordNet-3.0-LICENSE.txt",
+      "sha256": "640db279c949a88f61f851dd54ebbb22d003f8b90b85267042ef85a3781d3a52",
+      "url": "https://wordnetcode.princeton.edu/3.0/WordNet-3.0.tar.gz",
+      "version": "3.0"
+    }
+  },
+  "uniqueHeadwords": 6000,
+  "version": "wn30-cow-cmu-wordfreq-2026-10-18-v1",
+  "withActualGeneralFrequency": 6000,
+  "withAlignedChinese": 6000,
+  "withCmuPronunciation": 6000,
+  "withEnglishDefinition": 6000,
+  "withExamReferenceTags": 4101,
+  "withSourceExamples": 3259,
+  "withoutSourceExamples": 2741,
+  "wordfreqVersion": "3.1.1",
+  "wordfreqWheelSha256": "4b1c6ecffc6198be3396d5cf871c4423ca71c907c231348d352dd54d62b97473"
+}

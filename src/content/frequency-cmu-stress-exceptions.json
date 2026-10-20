@@ -1,0 +1,7 @@
+{
+  "undermine": {
+    "teachingStressIndex": 2,
+    "reason": "The original teaching aid uses final primary stress. The pinned CMUdict entry has initial primary and final secondary stress; its phonemes remain unchanged. Merriam-Webster lists both stress patterns, checked 2026-10-17. This is a documented pronunciation variant, not full IPA/phoneme agreement or professional review.",
+    "referenceUrl": "https://www.merriam-webster.com/dictionary/undermine"
+  }
+}
