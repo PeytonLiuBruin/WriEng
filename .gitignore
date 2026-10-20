@@ -25,3 +25,9 @@ docs/screenshots-v2/
 docs/screenshots-pages/
 
 docs/screenshots-v3/
+docs/screenshots-mobile/
+docs/screenshots-mobile-*/
+docs/e2e-report-mobile/
+docs/test-results-mobile/
+docs/test-results-mobile*.json
+docs/mobile-dev-summary.json

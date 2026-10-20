@@ -6,6 +6,9 @@ import { Pronunciation, selectEnglishVoice } from './Pronunciation';
 const mediaDevicesDescriptor = Object.getOwnPropertyDescriptor(navigator, 'mediaDevices');
 const createURLDescriptor = Object.getOwnPropertyDescriptor(URL, 'createObjectURL');
 const revokeURLDescriptor = Object.getOwnPropertyDescriptor(URL, 'revokeObjectURL');
+const fullscreenElementDescriptor = Object.getOwnPropertyDescriptor(document, 'fullscreenElement');
+const requestFullscreenDescriptor = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'requestFullscreen');
+const exitFullscreenDescriptor = Object.getOwnPropertyDescriptor(document, 'exitFullscreen');
 
 afterEach(() => {
   cleanup();
@@ -17,19 +20,27 @@ afterEach(() => {
   else Reflect.deleteProperty(URL, 'createObjectURL');
   if (revokeURLDescriptor) Object.defineProperty(URL, 'revokeObjectURL', revokeURLDescriptor);
   else Reflect.deleteProperty(URL, 'revokeObjectURL');
+  if (fullscreenElementDescriptor) Object.defineProperty(document, 'fullscreenElement', fullscreenElementDescriptor);
+  else Reflect.deleteProperty(document, 'fullscreenElement');
+  if (requestFullscreenDescriptor) Object.defineProperty(HTMLElement.prototype, 'requestFullscreen', requestFullscreenDescriptor);
+  else Reflect.deleteProperty(HTMLElement.prototype, 'requestFullscreen');
+  if (exitFullscreenDescriptor) Object.defineProperty(document, 'exitFullscreen', exitFullscreenDescriptor);
+  else Reflect.deleteProperty(document, 'exitFullscreen');
 });
 
 describe('handwriting is an input signal, never a recognition score', () => {
   let context: Record<string, ReturnType<typeof vi.fn> | string | number>;
   let width: number;
+  let height: number;
   let resized: (() => void) | undefined;
 
   beforeEach(() => {
     width = 600;
+    height = 220;
     context = Object.fromEntries(['setTransform', 'clearRect', 'beginPath', 'moveTo', 'arc', 'fill', 'quadraticCurveTo', 'lineTo', 'stroke'].map(key => [key, vi.fn()]));
     vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(context as unknown as CanvasRenderingContext2D);
     vi.spyOn(HTMLCanvasElement.prototype, 'getBoundingClientRect').mockImplementation(() => ({
-      left: 0, top: 0, right: width, bottom: 220, width, height: 220, x: 0, y: 0, toJSON: () => ({}),
+      left: 0, top: 0, right: width, bottom: height, width, height, x: 0, y: 0, toJSON: () => ({}),
     }));
     vi.stubGlobal('devicePixelRatio', 2);
     vi.stubGlobal('ResizeObserver', class {
@@ -109,6 +120,143 @@ describe('handwriting is an input signal, never a recognition score', () => {
     fireEvent.pointerMove(canvas, { pointerId: 2, clientX: 400, clientY: 10 });
     fireEvent.pointerUp(canvas, { pointerId: 1, clientX: 10, clientY: 10 });
     expect(onChange).toHaveBeenLastCalledWith(false);
+  });
+
+  it('captures only the drawing pointer, prevents drag defaults, and stops canceled strokes', () => {
+    const onChange = vi.fn();
+    render(<InkPad onChange={onChange} />);
+    const canvas = screen.getByRole('img');
+    const capture = vi.fn();
+    const release = vi.fn();
+    Object.defineProperties(canvas, { setPointerCapture: { value: capture }, releasePointerCapture: { value: release } });
+    const down = new PointerEvent('pointerdown', { pointerId: 7, pointerType: 'touch', clientX: 10, clientY: 20, bubbles: true, cancelable: true });
+    fireEvent(canvas, down);
+    expect(down.defaultPrevented).toBe(true);
+    expect(capture).toHaveBeenCalledWith(7);
+    fireEvent.pointerCancel(canvas, { pointerId: 7, clientX: 300, clientY: 100 });
+    expect(release).toHaveBeenCalledWith(7);
+    fireEvent.pointerMove(canvas, { pointerId: 7, clientX: 300, clientY: 100 });
+    expect(onChange).toHaveBeenLastCalledWith(false);
+    const menu = new MouseEvent('contextmenu', { bubbles: true, cancelable: true });
+    fireEvent(canvas, menu);
+    expect(menu.defaultPrevented).toBe(true);
+    const drag = new Event('dragstart', { bubbles: true, cancelable: true });
+    fireEvent(canvas, drag);
+    expect(drag.defaultPrevented).toBe(true);
+    expect(canvas.getAttribute('draggable')).toBe('false');
+    stroke(canvas);
+    expect(onChange).toHaveBeenLastCalledWith(true);
+  });
+
+  it('keeps a usable fullscreen board and submit control when the native API rejects', async () => {
+    const request = vi.fn().mockRejectedValue(new DOMException('Unavailable', 'NotAllowedError'));
+    Object.defineProperty(HTMLElement.prototype, 'requestFullscreen', { configurable: true, value: request });
+    const onChange = vi.fn();
+    const onSubmit = vi.fn();
+    render(<InkPad onChange={onChange} onSubmit={onSubmit} prompt="包裹；邮包" />);
+    const canvas = screen.getByRole('img');
+    fireEvent.click(screen.getByTestId('ink-fullscreen-toggle'));
+    await act(async () => { await Promise.resolve(); });
+    expect(request).toHaveBeenCalledOnce();
+    expect(screen.getByRole('dialog').getAttribute('data-fullscreen')).toBe('true');
+    expect(screen.getByTestId('ink-fullscreen-prompt').textContent).toBe('包裹；邮包');
+    expect(screen.getByRole('img')).toBe(canvas);
+    expect(document.body.style.overflow).toBe('hidden');
+    const submit = screen.getByTestId('ink-fullscreen-submit') as HTMLButtonElement;
+    expect(submit.disabled).toBe(true);
+    stroke(canvas);
+    expect(submit.disabled).toBe(false);
+    fireEvent.click(submit);
+    expect(onSubmit).toHaveBeenCalledOnce();
+    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(screen.getByRole('img')).toBe(canvas);
+    expect(document.body.style.overflow).not.toBe('hidden');
+  });
+
+  it('replays strokes through fullscreen viewport rotation without replacing the canvas', () => {
+    const viewport = Object.assign(new EventTarget(), { width: 390, height: 700, offsetTop: 0, offsetLeft: 0 });
+    vi.stubGlobal('visualViewport', viewport);
+    const onChange = vi.fn();
+    render(<InkPad onChange={onChange} onSubmit={() => {}} />);
+    const canvas = screen.getByRole('img') as HTMLCanvasElement;
+    stroke(canvas);
+    fireEvent.click(screen.getByTestId('ink-fullscreen-toggle'));
+    const panel = screen.getByRole('dialog');
+    expect(panel.style.getPropertyValue('--ink-viewport-height')).toBe('700px');
+    width = 844;
+    height = 250;
+    Object.assign(viewport, { width: 844, height: 390, offsetTop: 4, offsetLeft: 3 });
+    act(() => viewport.dispatchEvent(new Event('resize')));
+    expect(panel.style.getPropertyValue('--ink-viewport-width')).toBe('844px');
+    expect(panel.style.getPropertyValue('--ink-viewport-height')).toBe('390px');
+    expect(panel.style.getPropertyValue('--ink-viewport-top')).toBe('4px');
+    expect(panel.style.getPropertyValue('--ink-viewport-left')).toBe('3px');
+    expect(canvas.width).toBe(1688);
+    expect(canvas.height).toBe(500);
+    expect((context.lineTo as ReturnType<typeof vi.fn>).mock.lastCall?.[0]).toBeCloseTo(168.8);
+    expect((context.lineTo as ReturnType<typeof vi.fn>).mock.lastCall?.[1]).toBeCloseTo(60 / 220 * 250);
+    fireEvent.click(screen.getByTestId('ink-fullscreen-exit'));
+    expect(screen.getByRole('img')).toBe(canvas);
+    expect(onChange).toHaveBeenLastCalledWith(true);
+    fireEvent.click(screen.getByRole('button', { name: '撤销一笔' }));
+    expect(onChange).toHaveBeenLastCalledWith(false);
+  });
+
+  it('follows a native browser fullscreen exit and restores page scrolling', async () => {
+    let nativeElement: Element | null = null;
+    Object.defineProperty(document, 'fullscreenElement', { configurable: true, get: () => nativeElement });
+    const request = vi.fn(function(this: HTMLElement) {
+      nativeElement = this;
+      document.dispatchEvent(new Event('fullscreenchange'));
+      return Promise.resolve();
+    });
+    Object.defineProperty(HTMLElement.prototype, 'requestFullscreen', { configurable: true, value: request });
+    render(<InkPad onChange={() => {}} />);
+    const canvas = screen.getByRole('img');
+    fireEvent.click(screen.getByTestId('ink-fullscreen-toggle'));
+    await act(async () => { await Promise.resolve(); });
+    expect(nativeElement).toBe(screen.getByRole('dialog'));
+    act(() => { nativeElement = null; document.dispatchEvent(new Event('fullscreenchange')); });
+    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(document.body.style.overflow).not.toBe('hidden');
+    expect(screen.getByRole('img')).toBe(canvas);
+  });
+
+  it('closes with Escape, keeps focus inside fullscreen, and releases its page locks on unmount', () => {
+    const { unmount } = render(<><input aria-label="普通输入" /><InkPad onChange={() => {}} /></>);
+    const entry = screen.getByTestId('ink-fullscreen-toggle');
+    fireEvent.click(entry);
+    const exit = screen.getByTestId('ink-fullscreen-exit');
+    expect(document.activeElement).toBe(exit);
+    fireEvent.keyDown(document, { key: 'Tab', shiftKey: true });
+    expect(document.activeElement).toBe(exit);
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(document.activeElement).toBe(screen.getByTestId('ink-fullscreen-toggle'));
+    const input = screen.getByLabelText('普通输入') as HTMLInputElement;
+    fireEvent.change(input, { target: { value: 'normal input still works' } });
+    expect(input.value).toBe('normal input still works');
+    fireEvent.click(screen.getByTestId('ink-fullscreen-toggle'));
+    unmount();
+    expect(document.body.style.overflow).not.toBe('hidden');
+    expect(document.documentElement.style.overflow).not.toBe('hidden');
+  });
+
+  it('releases capture when disabled mid-stroke and respects the parent submit gate', () => {
+    const onChange = vi.fn();
+    const onSubmit = vi.fn();
+    const { rerender } = render(<InkPad onChange={onChange} onSubmit={onSubmit} submitDisabled />);
+    const canvas = screen.getByRole('img');
+    const release = vi.fn();
+    Object.defineProperty(canvas, 'releasePointerCapture', { value: release });
+    stroke(canvas);
+    fireEvent.click(screen.getByTestId('ink-fullscreen-toggle'));
+    fireEvent.click(screen.getByTestId('ink-fullscreen-submit'));
+    expect(onSubmit).not.toHaveBeenCalled();
+    fireEvent.pointerDown(canvas, { pointerId: 9, clientX: 10, clientY: 10 });
+    rerender(<InkPad onChange={onChange} onSubmit={onSubmit} disabled />);
+    expect(release).toHaveBeenCalledWith(9);
+    expect((screen.getByTestId('ink-fullscreen-submit') as HTMLButtonElement).disabled).toBe(true);
   });
 });
 

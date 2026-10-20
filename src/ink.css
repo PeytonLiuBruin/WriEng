@@ -1,0 +1,83 @@
+/* Keep handwriting gestures local; inputs and page scrolling outside the pad retain browser defaults. */
+.ink-pad, .ink-pad * {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+.ink-pad .ink-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 4px 12px;
+  border-bottom: 1px solid var(--line, #d6dfc9);
+  font-size: 12px;
+}
+.ink-heading > div { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.ink-pad .ink-canvas {
+  display: block;
+  width: 100%;
+  height: 220px;
+  touch-action: none;
+  -webkit-user-drag: none;
+  cursor: crosshair;
+}
+.ink-pad .ink-surface { touch-action: none; }
+.ink-pad .ink-action { touch-action: manipulation; }
+.ink-pad .ink-fullscreen-toggle { min-width: 88px; flex-shrink: 0; }
+
+/* The same mounted canvas becomes the larger board, including when native fullscreen is unavailable. */
+.ink-pad.ink-pad-fullscreen {
+  position: fixed;
+  z-index: 10000;
+  top: var(--ink-viewport-top, 0px);
+  left: var(--ink-viewport-left, 0px);
+  width: var(--ink-viewport-width, 100vw);
+  height: var(--ink-viewport-height, 100dvh);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  padding: max(6px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(6px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+  overflow: hidden;
+  overscroll-behavior: none;
+  background: var(--paper, #fffef7);
+  box-shadow: none;
+}
+.ink-pad.ink-pad-fullscreen .ink-heading { flex: 0 0 auto; padding: 0 4px; border: 0; }
+.ink-pad-fullscreen .ink-heading strong { white-space: nowrap; }
+.ink-pad-fullscreen .ink-fullscreen-prompt { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 14px; }
+.ink-pad.ink-pad-fullscreen .ink-surface { flex: 1 1 0; min-height: 0; position: relative; }
+.ink-pad.ink-pad-fullscreen .ink-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: none;
+}
+.ink-pad.ink-pad-fullscreen .ink-toolbar { flex: 0 0 auto; gap: 6px; padding: 0 6px; border-radius: 8px; }
+.ink-pad.ink-pad-fullscreen .ink-note { flex: 0 0 auto; margin: 0; padding: 0 6px; border: 0; font-size: 10px; line-height: 1.5; }
+.ink-pad.ink-pad-fullscreen .ink-fullscreen-submit { padding: 8px 16px; border-radius: 6px; background: #c4fa64; color: #122006; font-weight: 600; }
+.ink-pad.ink-pad-fullscreen .ink-fullscreen-submit:disabled { opacity: .45; }
+.cyber-shell .ink-pad.ink-pad-fullscreen { background: #0a111b; color: #edf3ff; }
+.cyber-study:has(.ink-pad-fullscreen) { animation: none; transform: none; overflow: visible; }
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .ink-pad.ink-pad-fullscreen { gap: 3px; }
+  .ink-pad.ink-pad-fullscreen .ink-heading { font-size: 11px; }
+  .ink-pad.ink-pad-fullscreen .ink-toolbar { min-height: 44px; }
+  .ink-pad.ink-pad-fullscreen .ink-note { display: none; }
+}
+@media (max-width: 420px) {
+  .ink-pad-fullscreen .ink-heading > div { display: block; overflow: hidden; }
+  .ink-pad-fullscreen .ink-fullscreen-prompt { display: block; font-size: 12px; }
+  .ink-pad.ink-pad-fullscreen .ink-toolbar { gap: 2px; padding: 0 2px; }
+  .ink-pad.ink-pad-fullscreen .ink-action { padding-left: 7px; padding-right: 7px; }
+  .ink-pad.ink-pad-fullscreen .ink-fullscreen-submit { padding-left: 10px; padding-right: 10px; }
+}

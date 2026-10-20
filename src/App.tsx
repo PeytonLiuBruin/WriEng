@@ -7,6 +7,7 @@ import { registerOffline, type OfflineState, type OfflineControls } from './pwa'
 import CyberStudy, { normalizeAnswer, WordPresentation } from './CyberStudy';
 
 type DrawerTab = 'library' | 'settings' | 'records' | 'sources';
+type SettingsPatch = Partial<AppData['settings']> | ((current: AppData['settings']) => Partial<AppData['settings']>);
 const dateLabel = (at: number) => new Date(at).toLocaleString('zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 const publicAsset = (path: string) => `${import.meta.env.BASE_URL}${path}`;
 const strings = (value: unknown): string[] => Array.isArray(value) ? value.filter((entry): entry is string => typeof entry === 'string') : [];
@@ -26,6 +27,15 @@ function introductionIds(decks: string[]): string[] {
 function recoverSession(data: AppData): AppData {
   const session = data.session;
   if (!session) return data;
+  const eligible = new Set(eligibleIds(data));
+  const manual = new Set(strings(session.nextWordIds));
+  if (typeof session.manualWordId === 'string') manual.add(session.manualWordId);
+  if (session.queue.slice(session.index).some(id => findLearningWord(id) && !eligible.has(id) && !manual.has(id))) {
+    // Repair sessions saved by earlier versions after their library preference
+    // changed. Past attempts remain intact; stale answers never move to a new word.
+    const fresh = pendingQueue(data, Date.now(), null).slice(0, 100);
+    return { ...data, session: fresh.length ? newSession(fresh, data, session.mode) : null };
+  }
   const queue = session.queue.filter(id => findLearningWord(id));
   const index = session.queue.slice(0, session.index).filter(id => findLearningWord(id)).length;
   if (!queue.length) return { ...data, session: null };
@@ -36,12 +46,12 @@ function recoverSession(data: AppData): AppData {
     Object.assign(recovered, { response: '', hasInk: false, hinted: false, revealed: false, retry: false, forgot: false, correct: false, presentedAt: Math.max(session.startedAt, Date.now()) });
     delete recovered.submittedAt;
   }
-  return { ...data, session: recovered };
+  return queue.length === session.queue.length && index === session.index && recovered.stage === session.stage ? data : { ...data, session: recovered };
 }
 
 function eligibleIds(data: AppData): string[] {
-  // Route preferences filter introductions. Every learned known sense can still come due.
-  return [...new Set([...Object.keys(data.progress).filter(id => findLearningWord(id)), ...introductionIds(data.settings.selectedDecks)])];
+  // Keep all history, but practice only senses in the currently selected libraries.
+  return introductionIds(data.settings.selectedDecks);
 }
 function skippedIds(session: StudySession | null, data: AppData, now: number): string[] {
   return session?.skipDay === localDay(now, data.settings.timezone) ? strings(session.skippedWordIds) : [];
@@ -53,7 +63,10 @@ function pendingQueue(data: AppData, now: number, session = data.session): strin
 function newSession(queue: string[], data: AppData, mode: StudySession['mode'] = 'handwriting', manual = false): StudySession {
   const now = Date.now();
   return { id: crypto.randomUUID(), queue, index: 0, stage: manual ? 'study' : data.progress[queue[0]] ? 'recall' : 'study', mode, startedAt: now, presentedAt: now,
-    response: '', hasInk: false, hinted: false, revealed: manual && Boolean(data.progress[queue[0]]), retry: false, forgot: false, correct: false, nextWordIds: [], skippedWordIds: [], skipDay: localDay(now, data.settings.timezone) };
+    response: '', hasInk: false, hinted: false, revealed: manual && Boolean(data.progress[queue[0]]), retry: false, forgot: false, correct: false, manualWordId: manual ? queue[0] : null, nextWordIds: [], skippedWordIds: [], skipDay: localDay(now, data.settings.timezone) };
+}
+function sameQuestion(expected: StudySession, current: StudySession | null): boolean {
+  return Boolean(current && expected.id === current.id && expected.index === current.index && expected.queue[expected.index] === current.queue[current.index]);
 }
 /** Rebuild after a completed card, so newly due reviews join before fresh introductions. */
 function advanceSession(data: AppData, session: StudySession, skip = false): StudySession {
@@ -66,7 +79,7 @@ function advanceSession(data: AppData, session: StudySession, skip = false): Stu
   const queue = [...session.queue.slice(0, index), ...pending];
   const manualFirst = manual[0] === pending[0] && pending.length > 0;
   const next: StudySession = { ...carried, queue, index, stage: pending.length ? manualFirst ? 'study' : data.progress[pending[0]] ? 'recall' : 'study' : 'done',
-    response: '', hasInk: false, hinted: false, revealed: manualFirst && Boolean(data.progress[pending[0]]), retry: false, forgot: false, correct: false, presentedAt: now, nextWordIds: manual.filter(id => id !== pending[0]) };
+    response: '', hasInk: false, hinted: false, revealed: manualFirst && Boolean(data.progress[pending[0]]), retry: false, forgot: false, correct: false, presentedAt: now, manualWordId: manualFirst ? pending[0] : null, nextWordIds: manual.filter(id => id !== pending[0]) };
   delete next.submittedAt;
   if (queue.length > 1000 && pending.length) return { ...newSession(pending, data, session.mode, manualFirst), skippedWordIds: skipped, skipDay: carried.skipDay, nextWordIds: next.nextWordIds };
   return next;
@@ -81,6 +94,10 @@ export default function App() {
   const [toast, setToast] = useState('');
   const [busy, setBusy] = useState(false);
   const lock = useRef(false);
+  const savingSettings = useRef(false);
+  const settingsQueue = useRef<SettingsPatch[]>([]);
+  const [settingsDraft, setSettingsDraft] = useState<AppData['settings'] | null>(null);
+  const settingsDraftRef = useRef<AppData['settings'] | null>(null);
   const autoFailed = useRef(false);
   const [clock, setClock] = useState(Date.now());
   const [drawer, setDrawer] = useState(false);
@@ -95,7 +112,14 @@ export default function App() {
 
   useEffect(() => {
     let alive = true;
-    loadData().then(next => { if (!alive) return; accept(next); setStorageReady(true); setLoaded(true); return getMigrationBackupInfo().then(info => { if (alive) setMigrationBackup(info.available); }); })
+    loadData().then(async next => {
+      if (!alive) return;
+      const recovered = recoverSession(next);
+      if (recovered.session !== next.session) next = await saveData(recovered);
+      if (!alive) return;
+      accept(next); setStorageReady(true); setLoaded(true);
+      return getMigrationBackupInfo().then(info => { if (alive) setMigrationBackup(info.available); });
+    })
       .catch(reason => { if (alive) { setError(`本地存储不可用：${reason.message}。请恢复浏览器存储权限后刷新，学习记录尚未确认保存。`); setLoaded(true); } });
     return () => { alive = false; };
   }, []);
@@ -119,16 +143,18 @@ export default function App() {
 
   async function saveSession(session: StudySession) {
     if (!storageReady) throw new Error('本地存储尚未就绪');
+    // A late callback from a replaced card must never restore its answer or queue.
+    if (!sameQuestion(session, dataRef.current.session)) return;
     if (lock.current) throw new Error('上一次保存尚未完成，请稍后重试');
     lock.current = true; setBusy(true);
     try { await persist({ ...dataRef.current, session }); }
     catch (reason) { setError(`会话保存失败：${(reason as Error).message}`); throw reason; }
     finally { lock.current = false; setBusy(false); }
   }
-  async function grade(rating: Rating) {
+  async function grade(rating: Rating, expected: StudySession) {
     if (lock.current || !storageReady) return;
     const current = dataRef.current, session = current.session;
-    if (!session || session.stage !== 'feedback') return;
+    if (!session || !sameQuestion(expected, session) || session.stage !== 'feedback') return;
     const word = findLearningWord(session.queue[session.index]);
     if (!word) return;
     lock.current = true; setBusy(true);
@@ -147,19 +173,47 @@ export default function App() {
     } catch (reason) { setError(`这次记录尚未确认保存：${(reason as Error).message}。请重试，同一事件不会重复计分。`); throw reason; }
     finally { lock.current = false; setBusy(false); }
   }
-  async function skip() {
-    if (lock.current || !dataRef.current.session) return;
+  async function skip(expected: StudySession) {
+    if (lock.current || !sameQuestion(expected, dataRef.current.session)) return;
     lock.current = true; setBusy(true);
     try { const current = dataRef.current; await persist({ ...current, session: advanceSession(current, current.session!, true) }); setToast('已略过，没有增加学习或掌握记录。'); }
     catch (reason) { setError(`尚未保存略过操作：${(reason as Error).message}`); }
     finally { lock.current = false; setBusy(false); }
   }
-  async function settings(patch: Partial<AppData['settings']>) {
-    if (lock.current || !storageReady) return;
+  async function settings(patch: SettingsPatch) {
+    if (!storageReady || (lock.current && !savingSettings.current)) return;
+    const desired = settingsDraftRef.current ?? dataRef.current.settings;
+    settingsDraftRef.current = { ...desired, ...(typeof patch === 'function' ? patch(desired) : patch) };
+    setSettingsDraft(settingsDraftRef.current);
+    settingsQueue.current.push(patch);
+    if (savingSettings.current) return;
+    savingSettings.current = true;
     lock.current = true; setBusy(true);
-    try { const current = dataRef.current; await persist({ ...current, settings: { ...current.settings, ...patch } }); autoFailed.current = false; }
+    try {
+      // Serialize writes and apply queued toggles to the last confirmed settings.
+      // Rapid changes cannot overwrite each other with an earlier render's values.
+      while (settingsQueue.current.length) {
+        const current = dataRef.current;
+        let nextSettings = current.settings;
+        for (const update of settingsQueue.current.splice(0)) {
+          nextSettings = { ...nextSettings, ...(typeof update === 'function' ? update(nextSettings) : update) };
+        }
+        const deckKey = (decks: string[]) => [...new Set(decks)].sort().join('|');
+        const refreshQueue = deckKey(nextSettings.selectedDecks) !== deckKey(current.settings.selectedDecks)
+          || nextSettings.dailyNewLimit !== current.settings.dailyNewLimit || nextSettings.timezone !== current.settings.timezone;
+        const next = { ...current, settings: nextSettings };
+        if (refreshQueue) {
+          const queue = pendingQueue(next, Date.now(), null).slice(0, 100);
+          // A fresh identity also clears component-local answer/ink when the
+          // selected libraries happen to introduce the same first word.
+          next.session = queue.length ? newSession(queue, next, current.session?.mode) : null;
+        }
+        await persist(next);
+        autoFailed.current = false;
+      }
+    }
     catch (reason) { setError(`设置尚未保存：${(reason as Error).message}`); }
-    finally { lock.current = false; setBusy(false); }
+    finally { savingSettings.current = false; settingsQueue.current = []; settingsDraftRef.current = null; setSettingsDraft(null); lock.current = false; setBusy(false); }
   }
   async function changeTab(next: DrawerTab) {
     if (next === 'library' && dataRef.current.session?.stage === 'recall' && !dataRef.current.session.revealed) {
@@ -197,8 +251,11 @@ export default function App() {
   const word = session && session.stage !== 'done' ? findLearningWord(session.queue[session.index]) : undefined;
   const today = localDay(clock, data.settings.timezone);
   const todayCount = data.events.filter(event => event.localDay === today).length;
-  const due = Object.values(data.progress).filter(progress => findLearningWord(progress.wordId) && progress.dueAt <= clock).length;
-  const nextDue = Object.values(data.progress).filter(progress => findLearningWord(progress.wordId) && progress.dueAt > clock).sort((a, b) => a.dueAt - b.dueAt)[0]?.dueAt;
+  const eligible = new Set(eligibleIds(data));
+  const due = Object.values(data.progress).filter(progress => eligible.has(progress.wordId) && progress.dueAt <= clock).length;
+  const nextDue = Object.values(data.progress).filter(progress => eligible.has(progress.wordId) && progress.dueAt > clock).sort((a, b) => a.dueAt - b.dueAt)[0]?.dueAt;
+  const preferences = settingsDraft ?? data.settings;
+  const settingsDisabled = busy && !savingSettings.current;
   const offlineLabel = offline.offlineReady ? offline.online ? '离线已就绪' : '离线学习中' : offline.status === 'development' ? '本机预览' : offline.status === 'error' ? '离线缓存未就绪' : offline.online ? '准备离线中' : '离线缓存未就绪';
   return <div className="cyber-shell">
     <a href="#study-main" className="skip-link">跳到学习内容</a>
@@ -208,7 +265,7 @@ export default function App() {
       {offline.updateAvailable && <div className="cyber-status-banner">有新版本。当前学习阶段会保留。<button type="button" onClick={() => controls.current?.applyUpdate()}>更新应用 <RefreshCw size={14} /></button></div>}
       <main className="cyber-main" id="study-main" data-testid="study-main">
         {error && <div className="cyber-error" role="alert"><span>{error}</span><button type="button" aria-label="关闭错误提示" onClick={() => setError('')}><X size={17} /></button>{autoFailed.current && <button type="button" onClick={() => { autoFailed.current = false; setClock(Date.now()); }}>重试保存</button>}</div>}
-        {!loaded ? <div className="cyber-loading" role="status">正在打开你的学习进度…</div> : !storageReady ? <section className="cyber-empty"><h1>先恢复本地存储</h1><p>浏览器尚未允许保存进度。恢复权限后刷新即可继续。</p></section> : session && word ? <CyberStudy key={`${session.id}:${session.index}`} data={data} session={session} word={word} busy={busy} onSession={saveSession} onGrade={grade} onSkip={skip} />
+        {!loaded ? <div className="cyber-loading" role="status">正在打开你的学习进度…</div> : !storageReady ? <section className="cyber-empty"><h1>先恢复本地存储</h1><p>浏览器尚未允许保存进度。恢复权限后刷新即可继续。</p></section> : session && word ? <CyberStudy key={`${session.id}:${session.index}`} data={data} session={session} word={word} busy={busy} onSession={saveSession} onGrade={rating => grade(rating, session)} onSkip={() => skip(session)} />
           : busy ? <div className="cyber-loading" role="status">正在准备下一词…</div> : <section className="cyber-empty" data-testid="queue-done"><span className="cyber-kicker">ALL CLEAR</span><Check size={36} /><h1>今天的队列已完成</h1><p>{nextDue ? `下次复习：${dateLabel(nextDue)}。到期后会自动出现在这里。` : '可以休息一下，也可以在词库里挑一个词。'}</p><button type="button" className="cyber-secondary" onClick={() => { setTab('library'); setDrawer(true); }}>打开词库 <ArrowRight size={17} /></button></section>}
         <footer className="cyber-study-footer"><span>看 → 隐藏 → 回忆 → 下一词</span><span>{due ? `${due} 个到期词优先` : '自动安排复习'}<i />本机保存</span></footer>
       </main>
@@ -216,7 +273,7 @@ export default function App() {
     {drawer && <Drawer onClose={() => setDrawer(false)}><div className="cyber-drawer-header"><div><span className="cyber-kicker">YOUR LEARNING SPACE</span><h2>词库与设置</h2></div><button type="button" className="cyber-close" aria-label="关闭词库与设置" onClick={() => setDrawer(false)}><X size={22} /></button></div><div className="cyber-drawer-tabs" role="group" aria-label="学习工具">{([{ id: 'library', label: '词库' }, { id: 'settings', label: '设置' }, { id: 'records', label: '记录' }, { id: 'sources', label: '来源' }] as const).map(item => <button type="button" key={item.id} aria-pressed={tab === item.id} onClick={() => changeTab(item.id)} disabled={busy}>{item.label}</button>)}</div>
       {error && <p className="cyber-error" role="alert">{error}</p>}
       {tab === 'library' && <Library data={data} busy={busy} onAddNext={addNext} />}
-      {tab === 'settings' && <section className="cyber-settings"><h3>把节奏调成适合自己</h3><label className="cyber-setting-row">每日新词上限<select aria-label="每日新词上限" value={data.settings.dailyNewLimit} disabled={busy} onChange={event => settings({ dailyNewLimit: Number(event.target.value) })}>{[0, 5, 10, 20, 30, 50, 100].map(limit => <option key={limit} value={limit}>{limit} 个</option>)}</select></label><p className="cyber-note">新词受每日上限约束；到期复习仍会自动混入。词库中主动选词可以额外学习。</p><fieldset disabled={busy}><legend>新词范围</legend><label><input type="checkbox" checked={!data.settings.selectedDecks.length} onChange={() => settings({ selectedDecks: [] })} />全部词库</label>{routes.map(route => <label key={route.id}><input type="checkbox" checked={data.settings.selectedDecks.includes(route.id)} onChange={event => settings({ selectedDecks: event.target.checked ? [...data.settings.selectedDecks, route.id] : data.settings.selectedDecks.filter(id => id !== route.id) })} />{route.label}</label>)}</fieldset><p className="cyber-note">精选路线是项目教学选编；底库考试标签来自社区词表映射。全部词库包含未标路线的词。均非官方必考或考试频率榜；通用语料频率不等于美国口语频率。</p><label className="cyber-setting-row">减少动态<input type="checkbox" checked={data.settings.reducedMotion} disabled={busy} onChange={event => settings({ reducedMotion: event.target.checked })} /></label><p className="cyber-note">当前日期按 {data.settings.timezone} 计算；复习时间以 UTC 毫秒保存。</p><div className="cyber-backup"><h3>学习备份</h3><p>进度只保存在当前浏览器。换设备前先导出；导入会校验并合并原始事件。</p><div className="cyber-actions"><button type="button" className="cyber-secondary" disabled={busy || !storageReady} onClick={download}><Download size={17} />导出 JSON</button><button type="button" className="cyber-secondary" disabled={busy || !storageReady} onClick={() => fileInput.current?.click()}><Upload size={17} />导入合并</button></div><input ref={fileInput} type="file" accept="application/json,.json" aria-label="选择学习备份" hidden onChange={event => upload(event.target.files?.[0])} />{migrationBackup && <><p className="cyber-note">已保留升级前原始快照，旧到期时间与原始事件保持兼容。</p><button type="button" className="cyber-text-button" onClick={downloadMigration}>导出升级前快照</button></>}</div><div className="cyber-offline-settings"><h3>离线与安装</h3><p>{offlineLabel}。文字与已缓存词库可离线使用；设备语音与麦克风支持由浏览器决定。</p>{installEvent && <button type="button" className="cyber-secondary" onClick={async () => { await installEvent.prompt(); setInstallEvent(null); }}>安装 WriEng</button>}<button type="button" className="cyber-text-button" onClick={() => controls.current?.checkForUpdate()}>检查应用更新</button></div></section>}
+      {tab === 'settings' && <section className="cyber-settings"><h3>把节奏调成适合自己</h3><label className="cyber-setting-row">每日新词上限<select aria-label="每日新词上限" value={preferences.dailyNewLimit} disabled={settingsDisabled} onChange={event => settings({ dailyNewLimit: Number(event.target.value) })}>{[0, 5, 10, 20, 30, 50, 100].map(limit => <option key={limit} value={limit}>{limit} 个</option>)}</select></label><p className="cyber-note">仅练习所选词库的新词与到期复习；切换后立即更新当前词。学习记录会保留，词库里手选词仍可额外学习。</p><fieldset disabled={settingsDisabled}><legend>练习范围</legend><label><input type="checkbox" checked={!preferences.selectedDecks.length} onChange={() => settings({ selectedDecks: [] })} />全部词库</label>{routes.map(route => <label key={route.id}><input type="checkbox" checked={preferences.selectedDecks.includes(route.id)} onChange={event => { const checked = event.target.checked; void settings(current => ({ selectedDecks: checked ? [...new Set([...current.selectedDecks, route.id])] : current.selectedDecks.filter(id => id !== route.id) })); }} />{route.label}</label>)}</fieldset><p className="cyber-note">精选路线是项目教学选编；底库考试标签来自社区词表映射。全部词库包含未标路线的词。均非官方必考或考试频率榜；通用语料频率不等于美国口语频率。</p><label className="cyber-setting-row">减少动态<input type="checkbox" checked={preferences.reducedMotion} disabled={settingsDisabled} onChange={event => settings({ reducedMotion: event.target.checked })} /></label><p className="cyber-note">当前日期按 {preferences.timezone} 计算；复习时间以 UTC 毫秒保存。</p><div className="cyber-backup"><h3>学习备份</h3><p>进度只保存在当前浏览器。换设备前先导出；导入会校验并合并原始事件。</p><div className="cyber-actions"><button type="button" className="cyber-secondary" disabled={busy || !storageReady} onClick={download}><Download size={17} />导出 JSON</button><button type="button" className="cyber-secondary" disabled={busy || !storageReady} onClick={() => fileInput.current?.click()}><Upload size={17} />导入合并</button></div><input ref={fileInput} type="file" accept="application/json,.json" aria-label="选择学习备份" hidden onChange={event => upload(event.target.files?.[0])} />{migrationBackup && <><p className="cyber-note">已保留升级前原始快照，旧到期时间与原始事件保持兼容。</p><button type="button" className="cyber-text-button" onClick={downloadMigration}>导出升级前快照</button></>}</div><div className="cyber-offline-settings"><h3>离线与安装</h3><p>{offlineLabel}。文字与已缓存词库可离线使用；设备语音与麦克风支持由浏览器决定。</p>{installEvent && <button type="button" className="cyber-secondary" onClick={async () => { await installEvent.prompt(); setInstallEvent(null); }}>安装 WriEng</button>}<button type="button" className="cyber-text-button" onClick={() => controls.current?.checkForUpdate()}>检查应用更新</button></div></section>}
       {tab === 'records' && <Records data={data} />}
       {tab === 'sources' && <Sources />}
     </Drawer>}
