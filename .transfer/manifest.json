@@ -1,0 +1,214 @@
+{
+  "format": "wrieng-exact-git-transfer-v1",
+  "source_commit": "2a726653e44e6a5089e48213d7b69e5817bda188",
+  "archive_format": "tar+gzip",
+  "archive_byte_length": 1561518,
+  "archive_sha256": "bc97922348722f912b35d75b50dff58c437b87e8be309738c764506d2310c0f6",
+  "chunk_raw_limit": 49152,
+  "chunks": [
+    {
+      "file": "chunk-0000.json",
+      "byte_length": 49152,
+      "sha256": "8d6b42402de9b5626987e8d8071f820a8b4911251b20914b3da09d3dfac72c06"
+    },
+    {
+      "file": "chunk-0001.json",
+      "byte_length": 49152,
+      "sha256": "caa6f11a4cffc2630b49978d0411d5ce2b3f7163e85a224afb826c00f7f26c53"
+    },
+    {
+      "file": "chunk-0002.json",
+      "byte_length": 49152,
+      "sha256": "d8bcffd8cca19a2422b6e047e49ca239fba06faa640cf27fa8db6cf6de5f6012"
+    },
+    {
+      "file": "chunk-0003.json",
+      "byte_length": 49152,
+      "sha256": "37a97ce6cb4a4e5a3dd6b0b2220151a07f81198b9629579fbddc1e94436600df"
+    },
+    {
+      "file": "chunk-0004.json",
+      "byte_length": 49152,
+      "sha256": "ff218fa4a4845985ddf6b6a2833f7d88f52414c8eb71f17bd23a2b129a6d4263"
+    },
+    {
+      "file": "chunk-0005.json",
+      "byte_length": 49152,
+      "sha256": "3d899ceab857c50cd7d375ddca2959f5095312263b1f368917601c992ad1bc1c"
+    },
+    {
+      "file": "chunk-0006.json",
+      "byte_length": 49152,
+      "sha256": "c030b51270737b4d23925d370fb953e76f369c66acde64c9c4fbc1433f1f459d"
+    },
+    {
+      "file": "chunk-0007.json",
+      "byte_length": 49152,
+      "sha256": "8e1f8f184a8995d4c0ec35f0fb4523ccfd8d1a202dc09b8d27682e08ffd6c031"
+    },
+    {
+      "file": "chunk-0008.json",
+      "byte_length": 49152,
+      "sha256": "ee88a4c61cb830c2eb234c8e020940bd396aade6bd8841737b75ce455dd5a611"
+    },
+    {
+      "file": "chunk-0009.json",
+      "byte_length": 49152,
+      "sha256": "d27ec5e055c69facff989116356fdca774a79d36791ed134c3a83c940f0a0b3d"
+    },
+    {
+      "file": "chunk-0010.json",
+      "byte_length": 49152,
+      "sha256": "f3e70744384a8806c45a11b708948849175520a7546564aa087a795fdfa6139e"
+    },
+    {
+      "file": "chunk-0011.json",
+      "byte_length": 49152,
+      "sha256": "157987a0110540e4f7ba1fbbacfad4cd8702243f6ca3036118154c3b206ccb99"
+    },
+    {
+      "file": "chunk-0012.json",
+      "byte_length": 49152,
+      "sha256": "c70e4ae71badb40fb5a5abc1cabf12880704e974cfa1d7ff3b09fa071f810671"
+    },
+    {
+      "file": "chunk-0013.json",
+      "byte_length": 49152,
+      "sha256": "e72fdc53596dc06e12a631e795692d616d1335e26f646a038140806e2e98c205"
+    },
+    {
+      "file": "chunk-0014.json",
+      "byte_length": 49152,
+      "sha256": "3c3f882a6d1c024f1058bda59e42d6fe4f9725dc9443d333e6fa33db169e9998"
+    },
+    {
+      "file": "chunk-0015.json",
+      "byte_length": 49152,
+      "sha256": "75fbeb933989d5ae49be948e21a079c1ac9479b9698d5353dda5d09093b012b0"
+    },
+    {
+      "file": "chunk-0016.json",
+      "byte_length": 49152,
+      "sha256": "3f9b73001cd22654d1e3d52d2f38bd2679ed26d8e835e44871740f62622ee920"
+    },
+    {
+      "file": "chunk-0017.json",
+      "byte_length": 49152,
+      "sha256": "a01dbf02b7c692e7039ad896a1aec562e60d1fc2cbaa100e87d2b7a981928e46"
+    },
+    {
+      "file": "chunk-0018.json",
+      "byte_length": 49152,
+      "sha256": "0e61530cfe522a4b544799c88963c4d2800191c4d721afabead9e97858c7fa77"
+    },
+    {
+      "file": "chunk-0019.json",
+      "byte_length": 49152,
+      "sha256": "0b656ebd1caad0313e2fe0c58c970086330a7d7d01aad48a1729f1664e40ef3b"
+    },
+    {
+      "file": "chunk-0020.json",
+      "byte_length": 49152,
+      "sha256": "dc37a6426e642353efdbc2619cb5f50116d024cd398273458b28901d1252243c"
+    },
+    {
+      "file": "chunk-0021.json",
+      "byte_length": 49152,
+      "sha256": "321fe9f8665b6ea35e4f2eb62d215e4340cb91906e7f19646766098ec4c99e04"
+    },
+    {
+      "file": "chunk-0022.json",
+      "byte_length": 49152,
+      "sha256": "7cd45c9b9bb73524ff9caf877b7a8d96ef0a5c407433f135def20801d0dd0180"
+    },
+    {
+      "file": "chunk-0023.json",
+      "byte_length": 49152,
+      "sha256": "e0fb43c444296865065b4ab73623bd86c60c3798d3f56166952e90f990e931d9"
+    },
+    {
+      "file": "chunk-0024.json",
+      "byte_length": 49152,
+      "sha256": "70bd0451197b6302556fac36f732721918623442ccf290aaaff7baa8eb02564f"
+    },
+    {
+      "file": "chunk-0025.json",
+      "byte_length": 49152,
+      "sha256": "525ee476682b93451770515e3f950b43e84a7c3dc179b036bf16dd5e8daf6ce6"
+    },
+    {
+      "file": "chunk-0026.json",
+      "byte_length": 49152,
+      "sha256": "caef355aa6b3322d688f1bf1809ad17727e225d5dfc51c66971f619f57f7f690"
+    },
+    {
+      "file": "chunk-0027.json",
+      "byte_length": 49152,
+      "sha256": "8cb97fd0b72c706548e769301988cc58550208ec10e7774648cf0f91e04df89c"
+    },
+    {
+      "file": "chunk-0028.json",
+      "byte_length": 49152,
+      "sha256": "d55b6196e7141340ea19a8a88ffbdacfbfe1a1f6290f5fd9737c1fd051a278ab"
+    },
+    {
+      "file": "chunk-0029.json",
+      "byte_length": 49152,
+      "sha256": "2e0c8807675fc8513a76f786a6adc6e138cc9e50b085f54e022408bbf224ec9b"
+    },
+    {
+      "file": "chunk-0030.json",
+      "byte_length": 49152,
+      "sha256": "ad90c25a4d4fd1e54926a909c37a613d6ac7811eda51be841b7b41e2de5ca21c"
+    },
+    {
+      "file": "chunk-0031.json",
+      "byte_length": 37806,
+      "sha256": "bc9f71a2bfe7c79ac1ffcfd526a597e197d50ff12b38c3ba0ff776ba1434b6d2"
+    }
+  ],
+  "files": [
+    {
+      "path": "docs/preview-desktop.png",
+      "mode": "100644",
+      "git_blob_sha": "bb5444de329c9ff7de4a9bee3ee910fa184585a0",
+      "byte_length": 493184,
+      "archive_member": "docs/preview-desktop.png"
+    },
+    {
+      "path": "docs/preview-mobile.png",
+      "mode": "100644",
+      "git_blob_sha": "187f2afc12abfad6e4e70e53670adae4843f1e38",
+      "byte_length": 143764,
+      "archive_member": "docs/preview-mobile.png"
+    },
+    {
+      "path": "public/icon-192.png",
+      "mode": "100644",
+      "git_blob_sha": "fd15cfb6361105f27383635ec39863f9faad6734",
+      "byte_length": 5088,
+      "archive_member": "public/icon-192.png"
+    },
+    {
+      "path": "public/icon-512.png",
+      "mode": "100644",
+      "git_blob_sha": "0896cdb356ad203a33a062a5b466b08a7d7cd144",
+      "byte_length": 19388,
+      "archive_member": "public/icon-512.png"
+    },
+    {
+      "path": "public/data/core-lexicon.json",
+      "mode": "100644",
+      "git_blob_sha": "a6aca6e9a41ea44a21cf2956e67a89c3957942d9",
+      "byte_length": 4613098,
+      "archive_member": "public/data/core-lexicon.json"
+    },
+    {
+      "path": "src/content/core-lexicon.json",
+      "mode": "100644",
+      "git_blob_sha": "a6aca6e9a41ea44a21cf2956e67a89c3957942d9",
+      "byte_length": 4613098,
+      "archive_member": "public/data/core-lexicon.json"
+    }
+  ]
+}
