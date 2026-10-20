@@ -1,0 +1,101 @@
+WriEng bilingual core lexicon — sources, adaptations and limits
+=============================================================
+
+Edition: wn30-cow-cmu-wordfreq-2026-10-18-v1
+Adapter: WriEng project, 2026-10-18.
+Files: /data/core-lexicon.json and /data/core-lexicon-manifest.json.
+
+This compilation selects 6,000 distinct English headwords with actual
+English dictionary definitions, Chinese translation lemmas aligned to
+the SAME WordNet synset, North American pronunciation phonemes, and
+actual general-English wordfreq Zipf estimates. The original 172
+WriEng teaching entries are a separate source group, not duplicated
+to inflate the core count.
+
+English definitions, synonyms and optional original quoted examples:
+  Princeton WordNet 3.0. Copyright 2006 by Princeton University.
+  https://wordnet.princeton.edu/
+  Complete retained terms: /licenses/WordNet-3.0-LICENSE.txt
+
+Chinese synset-aligned translation lemmas:
+  Chinese Open Wordnet, Copyright 2013, 2014 Francis Bond and Shan Wang,
+  distributed through Open Multilingual Wordnet at revision
+  406bf83b3c507a3d1f26e88252d5d66893fd36bf.
+  https://github.com/omwn/omw-data/tree/406bf83b3c507a3d1f26e88252d5d66893fd36bf/wns/cow
+  Complete retained terms: /licenses/COW-LICENSE.txt
+  Citation: Shan Wang and Francis Bond (2013), Building the Chinese
+  Open Wordnet (COW): Starting from Core Synsets, IJCNLP, pages 10–18.
+  OMW: Francis Bond and Ryan Foster (2013), Linking and extending an
+  open multilingual wordnet, ACL, pages 1352–1362.
+
+North American ARPABET phonemes:
+  Carnegie Mellon University CMU Pronouncing Dictionary, revision
+  74790861f652b15e4ac49015a90074ad62a27690.
+  Copyright (C) 1993–2015 Carnegie Mellon University.
+  https://github.com/cmusphinx/cmudict
+  Complete retained BSD notice: /CMUdict-LICENSE.txt
+
+General English spelling-level usage estimates:
+  wordfreq 3.1.1 by Robyn Speer and its credited underlying corpus
+  authors. https://pypi.org/project/wordfreq/3.1.1/
+  Actual API call: zipf_frequency(term, 'en', wordlist='best').
+  DATA license: Creative Commons Attribution-ShareAlike 4.0.
+  https://creativecommons.org/licenses/by-sa/4.0/
+  The package CODE license is Apache-2.0, not the data license.
+  The complete upstream licensing/citation sections and SUBTLEX
+  attribution are retained in wordfreq-3.1.1-UPSTREAM-NOTICE.txt.
+  SUBTLEX remains freely available data. See the complete notice
+  and /licenses/WriEng-frequency-NOTICE.txt.
+
+Community exam-reference tag facts ONLY:
+  ECDICT, revision bc015ed2e24a7abef49fc6dbbb7fe32c1dadaf8b,
+  declared MIT repository license, Copyright (c) 2025 Linwei.
+  https://github.com/skywind3000/ECDICT
+  Complete retained notice: /licenses/ECDICT-LICENSE.txt.
+  No ECDICT English/Chinese definitions, dictionary IPA, ratings,
+  audio, BNC rankings or contemporary-frequency rankings are copied.
+  Its upstream mixture lacks field-by-field original attribution;
+  WriEng therefore does not use it as the gloss/pronunciation source.
+
+Adaptations:
+  Select one evidenced WordNet sense per headword using the source
+  sense-use counts with explicit reviewed exceptions. Join Chinese
+  lemmas by exact synset. Remove WordNet adjective-position markers
+  from display spelling and COW morphological plus-join notation.
+  Omit individually recorded inaccurate Chinese source lemmas; no
+  replacement translations are invented. Retain at most three Chinese
+  lemmas per selected sense and at most two actual source examples.
+  Select real CMU entries, correct explicitly reviewed heteronyms,
+  preserve valid alternative source readings, and remove inline
+  comments from phoneme strings. Exclude unresolved homographs,
+  abbreviations, inflected forms and marked register-review items.
+  Add unchanged numeric wordfreq estimates and exact ECDICT tag facts.
+  Arrange the resulting compilation in JSON with source records.
+
+The compilation/frequency derivative is offered under CC-BY-SA-4.0;
+all upstream field-level copyright, permission and disclaimer notices
+remain applicable and must be retained. The downloadable JSON embeds
+the complete WordNet, COW, CMUdict and MIT notices once in its source
+metadata, plus wordfreq author/upstream attribution and the data
+license URL, so a copy detached from this website retains its notices.
+No source author or institution endorses this application.
+
+Important scope limits:
+  Chinese strings are source translation lemmas for a synset, not
+  newly written full Chinese definitions or professionally certified
+  translations. Source labels may be broad or imperfect.
+  General Zipf values aggregate a spelling across senses and parts of
+  speech in mixed text; they are not frequencies of the selected sense,
+  US conversation, any specific exam, or a live 2026 corpus.
+  Daily membership is an editorial general-learning selection.
+  Exam membership only inherits ECDICT community reference tags. It
+  does not assert a current official syllabus, count, frequency, rank
+  or exam guarantee. Exam-frequency values remain unknown.
+  All English examples shown in this core are actual source examples;
+  missing examples, Chinese example translations, mnemonics,
+  collocations and dictionary IPA are not fabricated.
+  Structural checks and independent AI-assisted source spot checks
+  do not constitute full professional linguistic review.
+
+The databases and compilation are provided AS IS, subject to the
+complete disclaimers in their respective retained licenses.

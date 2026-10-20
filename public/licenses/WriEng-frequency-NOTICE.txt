@@ -1,0 +1,57 @@
+WriEng general-English frequency data notice
+==========================================
+
+Source: wordfreq 3.1.1 by Robyn Speer and the underlying corpus authors
+listed in wordfreq-3.1.1-UPSTREAM-NOTICE.txt.
+Official package: https://pypi.org/project/wordfreq/3.1.1/
+Project: https://github.com/rspeer/wordfreq
+
+Derived files: /data/frequency-table.json, src/content/frequency-table.json.
+Adapter: WriEng project, 2026-10-17.
+Derived frequency table license: Creative Commons Attribution-ShareAlike
+4.0 International (CC-BY-SA-4.0).
+https://creativecommons.org/licenses/by-sa/4.0/
+Complete license: /licenses/CC-BY-SA-4.0.txt
+
+Changes: selected the literal headwords used in WriEng's seed modules;
+queried wordfreq.zipf_frequency(term, 'en', wordlist='best'); arranged the
+unmodified numeric outputs in an alphabetical JSON table with source metadata.
+The application's display maps wordfreq's raw 0 missing-word sentinel to null;
+the downloaded table retains the exact raw API output.
+No exam, word-sense-specific or US-spoken frequencies were inferred.
+
+English mixed-corpus frequencies combine multiple text sources. They are
+general usage estimates for the fixed dataset shipped in wordfreq 3.1.1,
+not current live measurements or an exam syllabus, rank, guarantee, or
+measurement of American daily conversation. Higher Zipf values indicate
+more frequent general use; they are logarithmic estimates, not percentages.
+
+Credit retained: Robyn Speer; Exquisite Corpus and its contributors;
+Google Books Ngram Viewer (https://books.google.com/ngrams);
+the Leeds Internet Corpus, Wikipedia and ParaCrawl;
+OPUS OpenSubtitles / OpenSubtitles;
+Marc Brysbaert, Boris New, and the SUBTLEX-US, SUBTLEX-UK, SUBTLEX-CH,
+SUBTLEX-DE and SUBTLEX-NL authors named in the complete upstream notice.
+SUBTLEX remains freely available data:
+http://crr.ugent.be/programs-data/subtitle-frequencies
+
+The complete upstream licensing/citation sections are retained in
+/licenses/wordfreq-3.1.1-UPSTREAM-NOTICE.txt, extracted without alteration
+from the verified official wheel's package metadata. They contain further
+source URLs and full author citations. The wheel does not contain a
+separate NOTICE file; this notice must not be mistaken for an upstream
+NOTICE.txt. The upstream code license is Apache-2.0, distinct from the
+data license. Its copyright/license notice is retained separately in
+/licenses/wordfreq-3.1.1-CODE-LICENSE.txt.
+
+The frequency table and its adaptation are distributed under CC-BY-SA-4.0.
+Keep the attribution, modifications notice, license link and share-alike
+terms when redistributing or adapting this table. There is no endorsement
+by the source authors. The data is supplied as-is, without warranty;
+see the complete license and upstream notices.
+
+WriEng's independent original teaching definitions, translations, examples,
+memory cues and pronunciation explanations remain a separate CC0-1.0
+source group. CMUdict phoneme strings remain under their retained BSD
+license. Do not relabel those sources as wordfreq-derived text or apply
+the code license to the frequency data.
