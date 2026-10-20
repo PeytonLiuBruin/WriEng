@@ -1,0 +1,25 @@
+.study-shortcut-hint { display: none; }
+.cyber-previous-word .previous-word-note { margin: 10px 0 22px; }
+.cyber-previous-word .previous-word-actions { margin-top: 26px; }
+.cyber-previous-word:focus { outline: none; }
+@media (hover: hover) and (pointer: fine) {
+  .study-shortcut-hint {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 16px;
+    color: #91a6c1;
+    font-size: 11px;
+  }
+  .study-shortcut-hint kbd {
+    min-width: 22px;
+    padding: 1px 5px;
+    border: 1px solid #34445a;
+    border-radius: 4px;
+    background: #101925;
+    color: #d6e3f6;
+    font: inherit;
+    text-align: center;
+  }
+}

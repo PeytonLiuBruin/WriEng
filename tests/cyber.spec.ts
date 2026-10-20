@@ -60,6 +60,10 @@ const nextName = /^(?:记住了|有点费劲|需要再练|我写对了)，下一
 
 async function open(page: Page) {
   await page.goto('./');
+  // First-use placement is optional; these established practice regressions
+  // continue after the user explicitly chooses to take it later.
+  await expect.poll(async () => await page.getByTestId('placement-dialog').isVisible() || await word(page).isVisible()).toBe(true);
+  if (await page.getByTestId('placement-dialog').isVisible()) await page.getByTestId('placement-later').click();
   await expect(main(page)).toBeVisible();
   await expect(word(page)).toBeVisible();
   await expect.poll(async () => Boolean((await state(page))?.session)).toBe(true);
@@ -120,7 +124,7 @@ async function noOverflow(page: Page, label: string) {
   expect(dimensions.scrollWidth, `${label}: ${JSON.stringify(dimensions)}`).toBeLessThanOrEqual(dimensions.innerWidth + 1);
 }
 
-test('first visit immediately teaches a large word without a setup dialog', async ({ page, browser }, info) => {
+test('first visit can defer placement and immediately learn a large word', async ({ page, browser }, info) => {
   await open(page);
   await expect(page.getByRole('dialog')).toHaveCount(0);
   await expect(word(page)).toHaveText(/^[a-z]+(?:[ '-][a-z]+)*$/i);

@@ -31,3 +31,8 @@ docs/e2e-report-mobile/
 docs/test-results-mobile/
 docs/test-results-mobile*.json
 docs/mobile-dev-summary.json
+docs/screenshots-learning*/
+docs/test-results-learning/
+docs/test-results-learning*.json
+docs/e2e-report-learning/
+docs/learning-*.json

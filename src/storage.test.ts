@@ -268,7 +268,7 @@ describe('IndexedDB learning persistence', () => {
     const migrated = await loadData()
     expect(migrated.schemaVersion).toBe(2)
     expect(migrated.events).toEqual(v1Fixture.events)
-    expect(migrated.settings).toEqual(v1Fixture.settings)
+    expect(migrated.settings).toEqual({ ...v1Fixture.settings, soundVolume: 0.12, difficultyAdjustment: 0, vocabularyProfile: null })
     for (const [wordId, progress] of Object.entries(v1Fixture.progress)) {
       expect(migrated.progress[wordId].dueAt).toBe(progress.dueAt)
       expect(migrated.progress[wordId].fsrsCard?.due).toBe(progress.dueAt)

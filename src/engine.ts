@@ -103,6 +103,21 @@ export function schedulerSnapshot(): SchedulerSnapshot {
   }
 }
 
+/** A short local placement sample suggests a frequency range, never a total vocabulary count. */
+export interface VocabularyProfile {
+  version: 1
+  status: 'completed' | 'skipped'
+  targetBand: number
+  rangeLow: number
+  rangeHigh: number
+  sampleSize: number
+  correct: number
+  bandsTested: number[]
+  assessedAt: number
+}
+
+export const DEFAULT_SOUND_VOLUME = 0.12
+
 export interface Settings {
   dailyNewLimit: number
   selectedDecks: string[]
@@ -111,6 +126,10 @@ export interface Settings {
   speechRate: number
   soundEnabled: boolean
   reducedMotion: boolean
+  /** Optional in old backups; current storage hydrates these preferences. */
+  soundVolume?: number
+  difficultyAdjustment?: -1 | 0 | 1
+  vocabularyProfile?: VocabularyProfile | null
 }
 
 export interface StudySession {
@@ -161,6 +180,7 @@ export function defaultData(): AppData {
     settings: {
       dailyNewLimit: 10, selectedDecks: ['daily'], timezone: currentTimezone(),
       onboardingComplete: false, speechRate: 0.85, soundEnabled: true, reducedMotion: false,
+      soundVolume: DEFAULT_SOUND_VOLUME, difficultyAdjustment: 0, vocabularyProfile: null,
     },
   }
 }

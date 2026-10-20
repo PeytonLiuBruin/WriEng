@@ -1,8 +1,8 @@
 import {
-  compareEventOrder, createAttempt, DAY_MS, defaultData, FSRS_PARAMETERS, LEGACY_SCHEDULER_VERSION, localDay,
+  compareEventOrder, createAttempt, DAY_MS, defaultData, DEFAULT_SOUND_VOLUME, FSRS_PARAMETERS, LEGACY_SCHEDULER_VERSION, localDay,
   PARAMETER_SET_ID, progressFromEvents, scheduleAttempt, schedulerSnapshot, SCHEDULER_VERSION,
   type AppData, type AttemptEvent, type AttemptInput, type Settings, type StudySession,
-  type WordProgress, type LegacyScheduleAnchors,
+  type WordProgress, type LegacyScheduleAnchors, type VocabularyProfile,
 } from './engine'
 
 export type { AppData, StudySession, Settings } from './engine'
@@ -46,6 +46,29 @@ function timestamp(value: unknown): value is number {
 function assert(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(`Invalid backup: ${message}`)
 }
+
+function validateVocabularyProfile(raw: unknown): VocabularyProfile | null {
+  if (raw === undefined || raw === null) return null
+  assert(object(raw) && raw.version === 1 && ['completed', 'skipped'].includes(String(raw.status)), 'invalid vocabulary profile version or status.')
+  const band = (value: unknown): value is number => Number.isInteger(value) && Number(value) >= 0 && Number(value) <= 4
+  assert(band(raw.targetBand) && band(raw.rangeLow) && band(raw.rangeHigh) && raw.rangeLow <= raw.targetBand && raw.targetBand <= raw.rangeHigh, 'invalid vocabulary frequency range.')
+  assert(Number.isInteger(raw.sampleSize) && Number(raw.sampleSize) >= 0 && Number(raw.sampleSize) <= 12
+    && Number.isInteger(raw.correct) && Number(raw.correct) >= 0 && Number(raw.correct) <= Number(raw.sampleSize), 'invalid vocabulary sample counts.')
+  assert(Array.isArray(raw.bandsTested) && raw.bandsTested.length <= 5 && raw.bandsTested.every(band)
+    && new Set(raw.bandsTested).size === raw.bandsTested.length, 'invalid vocabulary tested bands.')
+  if (raw.status === 'completed') {
+    assert(Number(raw.sampleSize) >= 8 && raw.bandsTested.length >= 3, 'completed vocabulary sample needs at least eight answers across three bands.')
+  } else {
+    assert(raw.sampleSize === 0 && raw.correct === 0 && raw.bandsTested.length === 0, 'skipped vocabulary sample cannot claim answered questions.')
+  }
+  assert(timestamp(raw.assessedAt) && raw.assessedAt <= Date.now() + MAX_CLOCK_SKEW_MS, 'invalid vocabulary assessment time.')
+  return {
+    version: 1, status: raw.status as VocabularyProfile['status'],
+    targetBand: raw.targetBand, rangeLow: raw.rangeLow, rangeHigh: raw.rangeHigh,
+    sampleSize: Number(raw.sampleSize), correct: Number(raw.correct), bandsTested: [...raw.bandsTested] as number[], assessedAt: raw.assessedAt,
+  }
+}
+
 function validateSettings(raw: unknown): Settings {
   assert(object(raw), 'missing settings.')
   assert(Number.isInteger(raw.dailyNewLimit) && Number(raw.dailyNewLimit) >= 0 && Number(raw.dailyNewLimit) <= 100, 'new-word limit must be 0–100.')
@@ -54,9 +77,15 @@ function validateSettings(raw: unknown): Settings {
   try { localDay(0, raw.timezone) } catch { throw new Error('Invalid backup: unsupported timezone.') }
   assert(typeof raw.onboardingComplete === 'boolean' && typeof raw.soundEnabled === 'boolean' && typeof raw.reducedMotion === 'boolean', 'invalid preferences.')
   assert(typeof raw.speechRate === 'number' && Number.isFinite(raw.speechRate) && raw.speechRate >= 0.25 && raw.speechRate <= 2, 'invalid speech rate.')
+  const soundVolume = raw.soundVolume === undefined ? DEFAULT_SOUND_VOLUME : raw.soundVolume
+  assert(typeof soundVolume === 'number' && Number.isFinite(soundVolume) && soundVolume >= 0 && soundVolume <= 1, 'invalid sound volume.')
+  const difficultyAdjustment = raw.difficultyAdjustment === undefined ? 0 : raw.difficultyAdjustment
+  assert(difficultyAdjustment === -1 || difficultyAdjustment === 0 || difficultyAdjustment === 1, 'invalid difficulty adjustment.')
+  const vocabularyProfile = validateVocabularyProfile(raw.vocabularyProfile)
   return {
     dailyNewLimit: Number(raw.dailyNewLimit), selectedDecks: [...raw.selectedDecks] as string[], timezone: raw.timezone,
     onboardingComplete: raw.onboardingComplete, soundEnabled: raw.soundEnabled, reducedMotion: raw.reducedMotion, speechRate: raw.speechRate,
+    soundVolume, difficultyAdjustment, vocabularyProfile,
   }
 }
 
@@ -236,7 +265,13 @@ async function updateData(update: (data: AppData) => AppData, legacyImport?: unk
   })
 }
 
-function mergeData(existing: AppData, incoming: AppData): AppData {
+const optionalPreferenceKeys = ['soundVolume', 'difficultyAdjustment', 'vocabularyProfile'] as const
+type OptionalPreferenceKey = typeof optionalPreferenceKeys[number]
+function missingOptionalPreferences(raw: unknown): OptionalPreferenceKey[] {
+  return optionalPreferenceKeys.filter(key => !object(raw) || raw[key] === undefined)
+}
+
+function mergeData(existing: AppData, incoming: AppData, missingPreferences: readonly OptionalPreferenceKey[] = []): AppData {
   const events = new Map(existing.events.map(event => [event.id, event]))
   for (const event of incoming.events) {
     const prior = events.get(event.id)
@@ -250,13 +285,22 @@ function mergeData(existing: AppData, incoming: AppData): AppData {
     // An old backup cannot unexpectedly bring an existing v1 appointment forward.
     if (!anchors[id] || anchor.dueAt > anchors[id].dueAt) anchors[id] = anchor
   }
-  return { ...incoming, events: mergedEvents, legacyScheduleAnchors: anchors, progress: progressFromEvents(mergedEvents, anchors) }
+  // Earlier backups do not express these preferences. Importing one must not
+  // erase a newer placement result or silently restore a muted user's volume.
+  const settings: Settings = {
+    ...incoming.settings,
+    ...(missingPreferences.includes('soundVolume') ? { soundVolume: existing.settings.soundVolume ?? DEFAULT_SOUND_VOLUME } : {}),
+    ...(missingPreferences.includes('difficultyAdjustment') ? { difficultyAdjustment: existing.settings.difficultyAdjustment ?? 0 } : {}),
+    ...(missingPreferences.includes('vocabularyProfile') ? { vocabularyProfile: existing.settings.vocabularyProfile ?? null } : {}),
+  }
+  return { ...incoming, settings, events: mergedEvents, legacyScheduleAnchors: anchors, progress: progressFromEvents(mergedEvents, anchors) }
 }
 
 /** Snapshot saves merge immutable evidence atomically, so a stale UI cannot erase a submitted attempt. */
 export async function saveData(data: AppData): Promise<AppData> {
+  const missingPreferences = missingOptionalPreferences(data.settings)
   const validated = validateData(data)
-  return updateData(existing => mergeData(existing, validated))
+  return updateData(existing => mergeData(existing, validated, missingPreferences))
 }
 
 /** One readwrite transaction records the immutable event AND its new due date together. */
@@ -285,7 +329,8 @@ export async function importData(json: string): Promise<AppData> {
   let parsed: unknown
   try { parsed = JSON.parse(json) } catch { throw new Error('Invalid backup: this file is not valid JSON.') }
   const incoming = validateData(parsed)
-  return updateData(existing => mergeData(existing, incoming), object(parsed) && parsed.schemaVersion !== 2 ? parsed : undefined)
+  const missingPreferences = missingOptionalPreferences(object(parsed) ? parsed.settings : undefined)
+  return updateData(existing => mergeData(existing, incoming, missingPreferences), object(parsed) && parsed.schemaVersion !== 2 ? parsed : undefined)
 }
 
 export interface MigrationBackupInfo { available: boolean; createdAt: number | null; sourceSchema: 0 | 1 | null }

@@ -44,12 +44,13 @@ interface Props {
   session: StudySession;
   word: LearningWord;
   busy: boolean;
+  recommendation?: string;
   onSession: (session: StudySession) => Promise<void>;
   onGrade: (rating: Rating) => Promise<void>;
   onSkip: () => Promise<void>;
 }
 
-export default function CyberStudy({ data, session, word, busy, onSession, onGrade, onSkip }: Props) {
+export default function CyberStudy({ data, session, word, busy, recommendation, onSession, onGrade, onSkip }: Props) {
   const [answer, setAnswer] = useState(String(session.response || ''));
   const [hasInk, setHasInk] = useState(Boolean(session.hasInk));
   const [inkSnapshot, setInkSnapshot] = useState('');
@@ -95,6 +96,7 @@ export default function CyberStudy({ data, session, word, busy, onSession, onGra
 
   return <div ref={focusTarget} tabIndex={-1} className={`cyber-study cyber-stage-${session.stage}`} data-stage={session.stage}>
     <div className="cyber-phase"><span className="cyber-kicker">{session.stage === 'study' ? '01 / 看一眼，听一遍' : session.stage === 'recall' ? '02 / 让记忆自己回来' : '03 / 看反馈，继续前进'}</span><span>{data.progress[word.id] ? '复习' : '新词'} · {session.index + 1} / {session.queue.length}</span></div>
+    {recommendation && <p className="recommendation-reason" data-testid="recommendation-reason">{recommendation}</p>}
     {session.stage === 'study' && <>
       <WordPresentation word={word} />
       {session.revealed === true && <p className="cyber-note">你刚刚预览过这个已学词，本次按辅助重学记录。</p>}

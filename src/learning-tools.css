@@ -1,0 +1,10 @@
+.study-navigation { display:flex; align-items:center; justify-content:space-between; gap:14px; margin-top:8px; }
+.study-navigation .cyber-text-button { min-height:44px; }
+.study-shortcut-hint { display:none; color:#8ea1bc; font-size:11px; line-height:1.8; }
+.study-shortcut-hint kbd { display:inline-block; border:1px solid #3a4b64; border-radius:4px; padding:0 5px; font:inherit; color:#dbe8fb; background:#111c2c; }
+.shortcut-meaning { display:block; font-size:10px; color:#6f849f; }
+.recommendation-reason { margin:10px 0 18px; font-size:11px; line-height:1.7; color:#91a7c5; }
+.recommendation-settings { border-top:1px solid #29394f; margin-top:22px; padding-top:6px; }
+.recommendation-settings .cyber-secondary { margin-top:12px; }
+@media (hover:hover) and (pointer:fine) { .study-shortcut-hint { display:block; } }
+@media (max-width:500px) { .study-navigation { margin:4px 0; } .recommendation-reason { margin-bottom:12px; font-size:10px; } }

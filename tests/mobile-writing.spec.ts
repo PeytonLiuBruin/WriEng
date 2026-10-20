@@ -34,6 +34,11 @@ async function writeState(page: Page, data: AppData) {
 
 async function open(page: Page) {
   await page.goto('./');
+  // Keep handwriting regressions focused on practice after explicit deferral
+  // of the separate first-use vocabulary assessment.
+  await expect.poll(async () => await page.getByTestId('placement-dialog').isVisible()
+    || await page.getByTestId('study-word').isVisible()).toBe(true);
+  if (await page.getByTestId('placement-dialog').isVisible()) await page.getByTestId('placement-later').click();
   await expect(page.getByTestId('study-word')).toBeVisible();
   await expect.poll(async () => Boolean((await state(page))?.session)).toBe(true);
 }
@@ -162,7 +167,7 @@ test('setting zero new words removes the current unlearned question immediately'
   await recall(page, 'typed');
   await page.locator('.cyber-recall-input').fill('discard-this-old-answer');
   await page.locator('.cyber-tools-button').click();
-  await page.locator('.cyber-settings select').selectOption('0');
+  await page.getByRole('combobox', { name: '每日新词上限', exact: true }).selectOption('0');
   await expect.poll(async () => (await state(page)).settings.dailyNewLimit).toBe(0);
   await page.locator('.cyber-close').click();
   await expect(page.getByTestId('queue-done')).toBeVisible();
