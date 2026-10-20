@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "settings": { "dailyNewLimit": 5, "selectedDecks": ["daily"], "timezone": "UTC", "onboardingComplete": true, "speechRate": 0.85, "soundEnabled": true, "reducedMotion": false },
+  "session": null,
+  "events": [
+    { "id": "v1-receipt-wrong", "wordId": "receipt-noun-1", "mode": "typed", "result": "incorrect", "requestedRating": "again", "effectiveRating": "again", "hinted": false, "revealed": false, "retry": false, "firstAttempt": true, "firstAttemptId": "v1-receipt-wrong", "sessionId": "v1-session", "roundId": "v1-round-1", "startedAt": 1792238390000, "submittedAt": 1792238395000, "at": 1792238400000, "timezone": "UTC", "localDay": "2026-10-17", "schedulerVersion": "wrieng-interval-v1", "answer": "receit", "hasInk": false },
+    { "id": "v1-analyze-good", "wordId": "analyze-verb-1", "mode": "handwriting", "result": "self-rated", "requestedRating": "good", "effectiveRating": "good", "hinted": false, "revealed": false, "retry": false, "firstAttempt": true, "firstAttemptId": "v1-analyze-good", "sessionId": "v1-session", "roundId": "v1-round-2", "startedAt": 1792238690000, "submittedAt": 1792238695000, "at": 1792238700000, "timezone": "UTC", "localDay": "2026-10-17", "schedulerVersion": "wrieng-interval-v1", "answer": null, "hasInk": true }
+  ],
+  "progress": {
+    "receipt-noun-1": { "wordId": "receipt-noun-1", "dueAt": 1792239000000, "intervalDays": 0.006944444444444444, "repetitions": 0, "lapses": 1, "lastReviewedAt": 1792238400000, "lastEventId": "v1-receipt-wrong", "lastRating": "again", "firstSeenAt": 1792238400000 },
+    "analyze-verb-1": { "wordId": "analyze-verb-1", "dueAt": 1792325100000, "intervalDays": 1, "repetitions": 1, "lapses": 0, "lastReviewedAt": 1792238700000, "lastEventId": "v1-analyze-good", "lastRating": "good", "firstSeenAt": 1792238700000 }
+  }
+}
